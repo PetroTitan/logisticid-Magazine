@@ -1,0 +1,40 @@
+{
+  "name": "logisticid-magazine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LogisticID Magazine \u2014 European road freight insight, practical shipping guidance and logistics intelligence. An independently deployed editorial application served under the /magazine path of the LogisticID website.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "validate:magazine": "vitest run tests/content",
+    "validate:seo": "vitest run tests/seo",
+    "validate:routing": "node scripts/validate-routing.mjs",
+    "validate": "eslint . && tsc --noEmit && vitest run && node scripts/validate-routing.mjs"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@11.21.0",
+  "dependencies": {
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.10.9",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

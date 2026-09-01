@@ -1,0 +1,10 @@
+# pnpm settings (single-package repository — no workspace packages).
+#
+# Dependencies explicitly allowed to run install/postinstall scripts. pnpm
+# blocks these by default, which is the right default: a postinstall script is
+# arbitrary code from a transitive dependency. `unrs-resolver` is the native
+# resolver behind eslint-config-next and needs its build step to work, and it
+# is allowed here for the same reason and in the same form as in the main
+# LogisticID repository.
+allowBuilds:
+  unrs-resolver: true
