@@ -66,11 +66,17 @@ export default async function SectionPage({ params }: Params) {
         {articles.length === 0 ? (
           <p className="empty-state">No articles have been published in this section yet.</p>
         ) : (
-          <ul className="article-list">
+          <>
+            {/* Without this the page jumps from h1 straight to the h3 of the
+                first card, which is a heading-order skip for anyone
+                navigating by headings. */}
+            <h2 className="sr-only">Articles</h2>
+            <ul className="article-list">
             {articles.map((article) => (
               <ArticleCard article={article} key={article.id} />
             ))}
-          </ul>
+            </ul>
+          </>
         )}
       </div>
     </>

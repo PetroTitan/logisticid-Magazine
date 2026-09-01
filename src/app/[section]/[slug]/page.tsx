@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -77,11 +79,15 @@ function Byline({ article }: { article: Article }) {
         By{" "}
         {article.authors.map((slug, index) => {
           const author = getAuthor(slug);
+          // A Fragment rather than a wrapping span: the byline is one
+          // sentence, and wrapping each link in its own element made an
+          // inline link look like a standalone control to assistive
+          // technology and to target-size tooling alike.
           return (
-            <span key={slug}>
+            <Fragment key={slug}>
               {index > 0 ? ", " : ""}
               <Link href={`/authors/${slug}`}>{author?.name ?? slug}</Link>
-            </span>
+            </Fragment>
           );
         })}
       </span>

@@ -137,6 +137,9 @@ img {
   align-items: center;
   display: inline-flex;
   gap: 0.6rem;
+  /* The brand is the route home from every page, and on a phone it was a
+     30px target. Height rather than padding, so the header does not grow. */
+  min-height: 44px;
   text-decoration: none;
 }
 
@@ -261,7 +264,9 @@ img {
 .site-footer__list a {
   display: inline-flex;
   align-items: center;
-  min-height: 32px;
+  /* Comfortable on a phone, where the footer is a real navigation surface
+     rather than an afterthought. */
+  min-height: 44px;
 }
 
 .site-footer__note {
@@ -378,6 +383,11 @@ img {
 }
 
 .article-card__title a {
+  /* inline-block plus vertical padding, rather than min-height: the link must
+     stay inside the heading's text flow so it can wrap, while still being a
+     comfortable target when the title fits on one line. */
+  display: inline-block;
+  padding-block: 0.7rem;
   text-decoration: none;
 }
 
@@ -740,6 +750,8 @@ img {
 }
 
 .section-card h3 a {
+  display: inline-block;
+  padding-block: 0.6rem;
   text-decoration: none;
 }
 

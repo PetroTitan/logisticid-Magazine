@@ -63,11 +63,17 @@ export default async function AuthorPage({ params }: Params) {
         {written.length === 0 ? (
           <p className="empty-state">No published articles carry this byline yet.</p>
         ) : (
-          <ul className="article-list">
+          <>
+            {/* Without this the page jumps from h1 straight to the h3 of the
+                first card, which is a heading-order skip for anyone
+                navigating by headings. */}
+            <h2 className="sr-only">Articles</h2>
+            <ul className="article-list">
             {written.map((article) => (
               <ArticleCard article={article} key={article.id} />
             ))}
-          </ul>
+            </ul>
+          </>
         )}
       </div>
     </>
