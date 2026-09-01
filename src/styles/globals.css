@@ -1,0 +1,770 @@
+@import "tailwindcss";
+
+/*
+ * LogisticID Magazine styling.
+ *
+ * The palette is the approved LogisticID identity, unchanged: blue #0874C9,
+ * orange #F58220, black #111111, white #FFFFFF. The Magazine is part of the
+ * LogisticID site, so a reader crossing into /magazine should recognise it
+ * immediately; a second visual identity would read as a different company.
+ *
+ * What is Magazine-specific is typographic rather than chromatic: a measured
+ * prose column, generous leading, and restrained rules instead of cards and
+ * shadows. Editorial pages are for reading at length, which is a different job
+ * from a service page selling a service.
+ */
+
+@theme {
+  --color-brand-blue: #0874c9;
+  --color-brand-orange: #f58220;
+  --color-brand-black: #111111;
+  --color-brand-white: #ffffff;
+}
+
+:root {
+  --brand-blue: #0874c9;
+  --brand-orange: #f58220;
+  --brand-black: #111111;
+  --brand-white: #ffffff;
+
+  --text-secondary: rgb(17 17 17 / 0.7);
+  --text-muted: rgb(17 17 17 / 0.55);
+  --border: rgb(17 17 17 / 0.14);
+  --border-strong: rgb(17 17 17 / 0.28);
+  --blue-soft: rgb(8 116 201 / 0.06);
+  --blue-medium: rgb(8 116 201 / 0.13);
+  --orange-soft: rgb(245 130 32 / 0.12);
+
+  --radius-small: 4px;
+  --radius-medium: 8px;
+
+  --shell: 76rem;
+  /* The prose column. Long-form text is set to a measure of roughly 68
+     characters, which is where line length stops costing the reader. */
+  --measure: 40rem;
+
+  --font-sans: Arial, Helvetica, ui-sans-serif, system-ui, sans-serif;
+  --site-header-height: 4.5rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* A sticky header sits above the content; without this an in-page anchor,
+     including the skip link's target, lands underneath it. */
+  scroll-padding-top: calc(var(--site-header-height) + 1rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--brand-white);
+  color: var(--brand-black);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
+  margin: 0;
+  text-rendering: optimizeLegibility;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: inherit;
+}
+
+/* A single visible focus treatment for everything focusable. Keyboard users
+   must always be able to see where they are. */
+:focus-visible {
+  outline: 3px solid var(--brand-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.shell {
+  margin-inline: auto;
+  max-width: var(--shell);
+  padding-inline: 1.25rem;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------- */
+/* Skip link                                                         */
+/* ---------------------------------------------------------------- */
+
+.skip-link {
+  background: var(--brand-blue);
+  color: var(--brand-white);
+  font-weight: 700;
+  left: 0.75rem;
+  padding: 0.75rem 1rem;
+  position: fixed;
+  top: -100%;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* Brand                                                             */
+/* ---------------------------------------------------------------- */
+
+.brand {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.brand__mark {
+  fill: none;
+  flex: none;
+  height: 1.9rem;
+  stroke: var(--brand-orange);
+  stroke-linecap: round;
+  stroke-width: 5;
+  width: 1.9rem;
+}
+
+.brand__mark circle {
+  fill: var(--brand-orange);
+  stroke: none;
+}
+
+.brand__name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.brand__suffix {
+  color: var(--brand-blue);
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------- */
+/* Header and footer                                                 */
+/* ---------------------------------------------------------------- */
+
+.site-header {
+  background: var(--brand-white);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.site-header__inner {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  min-height: var(--site-header-height);
+  padding-block: 0.75rem;
+}
+
+.site-nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.site-nav__link {
+  border-radius: var(--radius-small);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.94rem;
+  font-weight: 600;
+  /* 44px minimum target height, met by padding rather than a fixed height so
+     the text can wrap on a narrow screen without being clipped. */
+  min-height: 44px;
+  padding: 0.55rem 0.6rem;
+  text-decoration: none;
+}
+
+.site-nav__link:hover {
+  background: var(--blue-soft);
+  color: var(--brand-blue);
+}
+
+.site-nav__link[aria-current="page"] {
+  color: var(--brand-blue);
+}
+
+.site-nav__exit {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-small);
+  color: var(--brand-black);
+}
+
+.site-footer {
+  background: var(--brand-black);
+  color: var(--brand-white);
+  margin-top: 4rem;
+  padding-block: 2.75rem 2rem;
+}
+
+.site-footer a {
+  color: var(--brand-white);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.site-footer__heading {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+}
+
+.site-footer__list {
+  display: grid;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-footer__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.site-footer__note {
+  border-top: 1px solid rgb(255 255 255 / 0.22);
+  color: rgb(255 255 255 / 0.75);
+  font-size: 0.85rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* Generic page furniture                                            */
+/* ---------------------------------------------------------------- */
+
+.page {
+  padding-block: 2.5rem 1rem;
+}
+
+.page__eyebrow {
+  color: var(--brand-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.6rem;
+  text-transform: uppercase;
+}
+
+.page__title {
+  font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 0.9rem;
+}
+
+.page__standfirst {
+  color: var(--text-secondary);
+  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem);
+  margin: 0;
+  max-width: var(--measure);
+}
+
+.breadcrumbs {
+  font-size: 0.85rem;
+  margin: 0 0 1.5rem;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  color: var(--text-muted);
+  content: "/";
+  margin-left: 0.35rem;
+}
+
+.breadcrumbs a {
+  color: var(--brand-blue);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbs [aria-current="page"] {
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------- */
+/* Article listings                                                  */
+/* ---------------------------------------------------------------- */
+
+.article-list {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+}
+
+.article-list__item {
+  border-top: 1px solid var(--border);
+  padding-block: 1.5rem;
+}
+
+.article-card__meta {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-card__section {
+  color: var(--brand-blue);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.article-card__title {
+  font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.55rem);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+.article-card__title a {
+  text-decoration: none;
+}
+
+.article-card__title a:hover {
+  color: var(--brand-blue);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.article-card__summary {
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: var(--measure);
+}
+
+/* ---------------------------------------------------------------- */
+/* Article page                                                      */
+/* ---------------------------------------------------------------- */
+
+.article {
+  padding-block: 2.5rem 1rem;
+}
+
+.article__header {
+  max-width: 48rem;
+}
+
+.article__title {
+  font-size: clamp(2rem, 1.35rem + 2.6vw, 3.1rem);
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin: 0 0 1rem;
+}
+
+.article__standfirst {
+  color: var(--text-secondary);
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.article__byline {
+  align-items: center;
+  border-block: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  gap: 0.4rem 1rem;
+  padding-block: 0.9rem;
+}
+
+.article__byline a {
+  color: var(--brand-blue);
+  font-weight: 600;
+}
+
+.article__hero {
+  margin: 2rem 0 0;
+}
+
+.article__hero img {
+  border-radius: var(--radius-medium);
+  display: block;
+  width: 100%;
+}
+
+.article__hero figcaption {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.article__illustrative {
+  background: var(--orange-soft);
+  border-radius: var(--radius-small);
+  color: var(--brand-black);
+  font-weight: 700;
+  margin-right: 0.4rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.prose {
+  margin-top: 2rem;
+  max-width: var(--measure);
+}
+
+.prose > * + * {
+  margin-top: 1.25rem;
+}
+
+.prose h2 {
+  font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.75rem);
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin-top: 2.5rem;
+}
+
+.prose h3 {
+  font-size: clamp(1.1rem, 1.03rem + 0.35vw, 1.3rem);
+  line-height: 1.3;
+  margin-top: 2rem;
+}
+
+.prose p {
+  margin-block: 0;
+}
+
+.prose ul,
+.prose ol {
+  margin-block: 0;
+  padding-left: 1.35rem;
+}
+
+.prose li + li {
+  margin-top: 0.5rem;
+}
+
+.prose a {
+  color: var(--brand-blue);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.prose code {
+  background: var(--blue-soft);
+  border-radius: var(--radius-small);
+  font-size: 0.9em;
+  padding: 0.1rem 0.35rem;
+  /* Long identifiers must not push the column sideways on a phone. */
+  overflow-wrap: anywhere;
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--brand-orange);
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.prose blockquote footer {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* A table can be wider than the prose column on a phone. It scrolls inside
+   its own container so the page body never scrolls sideways. */
+.prose .table-scroll {
+  overflow-x: auto;
+}
+
+.prose table {
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  min-width: 26rem;
+  width: 100%;
+}
+
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose thead th {
+  border-bottom: 2px solid var(--border-strong);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.note {
+  border-left: 4px solid var(--brand-blue);
+  background: var(--blue-soft);
+  border-radius: 0 var(--radius-medium) var(--radius-medium) 0;
+  padding: 1rem 1.1rem;
+}
+
+.note--boundary {
+  background: var(--orange-soft);
+  border-left-color: var(--brand-orange);
+}
+
+.note__label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+}
+
+/* Citation markers. Rendered as real links to the reference list, and given a
+   large enough target to be tapped on a phone. */
+.citation {
+  color: var(--brand-blue);
+  font-size: 0.78em;
+  font-weight: 700;
+  padding: 0.35em 0.2em;
+  text-decoration: none;
+  vertical-align: super;
+}
+
+.citation:hover {
+  text-decoration: underline;
+}
+
+.references {
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+}
+
+.references__list {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding-left: 1.35rem;
+}
+
+.references__list li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  /* Long URLs must wrap rather than widen the page. */
+  overflow-wrap: anywhere;
+}
+
+.references__type {
+  color: var(--text-muted);
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.references__partial {
+  color: var(--text-secondary);
+  display: block;
+  font-style: italic;
+}
+
+.correction {
+  background: var(--orange-soft);
+  border: 1px solid var(--brand-orange);
+  border-radius: var(--radius-medium);
+  margin-top: 2rem;
+  padding: 1rem 1.1rem;
+}
+
+.correction__label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+}
+
+.article__aside {
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+}
+
+.article__aside h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.9rem;
+}
+
+.linked-list {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.linked-list a {
+  color: var(--brand-blue);
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.linked-list a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- */
+/* Search                                                            */
+/* ---------------------------------------------------------------- */
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  max-width: var(--measure);
+}
+
+.search-form__input {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-small);
+  flex: 1 1 14rem;
+  font: inherit;
+  min-height: 48px;
+  padding: 0.6rem 0.75rem;
+}
+
+.button {
+  background: var(--brand-orange);
+  border: none;
+  border-radius: var(--radius-small);
+  color: var(--brand-black);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  min-height: 48px;
+  padding: 0.6rem 1.25rem;
+}
+
+.button:hover {
+  background: #e0741a;
+}
+
+.empty-state {
+  color: var(--text-secondary);
+  margin-top: 1.5rem;
+  max-width: var(--measure);
+}
+
+/* ---------------------------------------------------------------- */
+/* Sections index                                                    */
+/* ---------------------------------------------------------------- */
+
+.section-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+}
+
+.section-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
+  padding: 1.25rem;
+}
+
+.section-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem;
+}
+
+.section-card h3 a {
+  text-decoration: none;
+}
+
+.section-card h3 a:hover {
+  color: var(--brand-blue);
+  text-decoration: underline;
+}
+
+.section-card p {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+/* Available to assistive technology, not painted. Used for headings that
+   structure the page for a screen reader where a visible heading would be
+   redundant, and for form labels whose purpose is clear visually. */
+.sr-only {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
