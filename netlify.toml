@@ -1,0 +1,83 @@
+# Netlify deployment configuration for LogisticID Magazine.
+#
+# THIS FILE IS AUTHORITATIVE. Netlify gives netlify.toml precedence over the
+# build settings in the site dashboard, so the deployment cannot be broken by
+# stale or half-remembered UI state, and a change to it is reviewable and
+# revertable with the code.
+#
+# It is written from the incident the main LogisticID site already had: that
+# site was connected with no build command and no publish directory, so Netlify
+# logged "No build steps found", defaulted the publish directory to the
+# repository root, found no HTML there (`.next` is gitignored), and published
+# an empty site that 404'd on every route. Everything below exists so that
+# cannot happen here.
+#
+# Dashboard fields must be left COMPLETELY BLANK — base directory, package
+# directory, build command, publish directory and functions directory. Not the
+# word "empty", not ".", not "/". Blank.
+
+[build]
+  # Required. Without it Netlify skips the build entirely and publishes the
+  # repository as-is, which contains no HTML.
+  command = "pnpm build"
+
+  # Next.js build output. This must not equal the base directory: the Next.js
+  # runtime rejects that outright, and leaving it unset makes Netlify default
+  # to exactly that.
+  publish = ".next"
+
+# Required, and not optional in practice.
+#
+# Netlify auto-attaches the Next.js Runtime only to sites its framework
+# detection classified as Next.js. Declaring it here makes Netlify install and
+# run the runtime regardless of site-level detection, which is what turns
+# `.next` into real static assets plus the server handler. Without it the
+# `.next` directory is uploaded verbatim and every URL falls through to
+# Netlify's own 404 — the exact failure the main site had.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  # package.json requires Node >=24. Pinning keeps builds reproducible if
+  # Netlify's default moves. pnpm needs no pinning: Netlify reads
+  # `packageManager` from package.json via corepack.
+  NODE_VERSION = "24"
+
+  # Site-wide, in every context — and this DIVERGES from the main LogisticID
+  # site, which scopes its origin to production only. The difference is
+  # deliberate and the reasoning matters:
+  #
+  # The main site withholds indexing from previews through robots.ts, which
+  # emits "Disallow: /" when the origin is unset. The Magazine CANNOT use that
+  # mechanism: with basePath "/magazine" it does not serve /robots.txt at its
+  # own host root at all (that path is outside its namespace and correctly
+  # 404s). Preview protection here is the X-Robots-Tag header in
+  # next.config.ts, keyed on Netlify's CONTEXT, which covers every route
+  # including the feeds and sitemap that have no HTML head.
+  #
+  # Given that, leaving the origin unset on previews would buy nothing and cost
+  # something: getSiteOrigin() would fall back to localhost, so preview builds
+  # would render localhost canonicals and feeds, making it impossible to QA the
+  # things most worth QA-ing before production. Setting it everywhere means a
+  # preview renders exactly what production will.
+  #
+  # The failure mode is also the right way round. If the noindex header were
+  # ever removed and a preview were crawled, its canonical would point at the
+  # real production URL — self-correcting. A localhost canonical would not be.
+  NEXT_PUBLIC_SITE_ORIGIN = "https://logisticid.com"
+
+# NOTE — deliberately absent from this file:
+#
+# 1. No redirect or rewrite of any kind. This site must never rewrite
+#    /magazine/*: it is the destination of the main site's proxy, and a rule
+#    here would create the second hop that Netlify's one-hop limit forbids, or
+#    a loop.
+#
+# 2. No password protection. Netlify does not permit rewrites to a
+#    password-protected site, so enabling it would silently break the proxy.
+#    Preview deployments are protected by the noindex header instead.
+#
+# 3. No custom domain. This site is reached only through the main site's proxy.
+#    Its Netlify hostname is infrastructure and must never become the public
+#    identity of the publication — src/lib/env.ts refuses to build a canonical
+#    URL on a *.netlify.app host at all.

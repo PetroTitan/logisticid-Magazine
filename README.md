@@ -4,7 +4,7 @@ European road freight insight, practical shipping guidance and logistics intelli
 
 An **independently deployed** editorial application, served to the public under `/magazine` on the LogisticID website. One public identity, two applications: publishing an article does not rebuild the main LogisticID site, and a main-site change does not rebuild the Magazine.
 
-> **Deployment status: not deployed.** The application is complete and validated locally. Creating the GitHub repository and the hosting project requires credentials this environment does not have. See [`docs/logisticid-magazine-architecture-baseline.md`](docs/logisticid-magazine-architecture-baseline.md) §6.
+> **Deployment status: pushed, not deployed.** The repository is live at `PetroTitan/logisticid-Magazine` (private). Creating the Netlify site is blocked on authentication — the CLI reports "Not logged in." See [`docs/netlify-site-setup.md`](docs/netlify-site-setup.md) for the single action required.
 
 ## Getting started
 
@@ -32,6 +32,7 @@ pnpm validate:routing    # builds in production config and probes a real server
 | --- | --- |
 | [`architecture-baseline`](docs/logisticid-magazine-architecture-baseline.md) | What was audited and verified before any code; the blockers |
 | [`routing-architecture`](docs/magazine-routing-architecture.md) | The same-host decision, options rejected, the measured `basePath` traps |
+| [`netlify-site-setup`](docs/netlify-site-setup.md) | Creating the Magazine's Netlify site, and the residual risk to decide on |
 | [`main-site-integration`](docs/main-site-integration.md) | The exact change to make in the main repository |
 | [`routing-rollback`](docs/magazine-routing-rollback.md) | How to withdraw the Magazine without touching the main site |
 | [`publishing-workflow`](docs/magazine-publishing-workflow.md) | Research → draft → review → deploy → prove isolation |

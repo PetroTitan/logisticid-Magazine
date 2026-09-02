@@ -31,33 +31,17 @@ Four commits, in dependency order:
 
 ## 1. The rewrite — `netlify.toml`
 
-Append to the existing file. `netlify.toml` is documented in that repository as authoritative over the dashboard, which is exactly why the rule belongs here and not in the Netlify UI: in the file it is reviewable, diffable and revertable with the code.
+**Do not hand-write this block, and do not copy one from a document.** Generate it:
 
-```toml
-# LogisticID Magazine is a separate application with its own repository, build
-# and deploy history, served under /magazine on this hostname.
-#
-# status = 200 makes this a rewrite rather than a redirect: the address bar
-# keeps showing logisticid.com/magazine/... while Netlify fetches the response
-# from the Magazine site. A 3xx here would make the Magazine's own hostname the
-# public identity of the publication, which is the thing this arrangement
-# exists to avoid.
-#
-# The destination repeats /magazine because the Magazine app is itself served
-# under basePath "/magazine"; :splat carries only the remainder. Dropping the
-# second /magazine is the most common way this rule is misconfigured, and it
-# fails as a 404 on every article rather than as an error here.
-#
-# This rule must come after any more specific rules and must cover the whole
-# subtree, including /magazine/_next/*, or the pages will render unstyled.
-[[redirects]]
-  from = "/magazine/*"
-  to = "https://<VERIFIED-MAGAZINE-HOSTNAME>/magazine/:splat"
-  status = 200
-  force = true
+```bash
+node scripts/print-integration-diff.mjs <magazine-host>
 ```
 
-**`<VERIFIED-MAGAZINE-HOSTNAME>` must be replaced with a hostname that has been confirmed to serve HTTP 200.** Netlify does not validate a proxy destination at deploy time; a wrong value deploys cleanly and 404s every article.
+The script refuses to print anything until it has proved, against that exact hostname, that the Magazine home page and section pages return 200, that the sitemap route handler is served, that the host root and `/_next/*` return 404, that unknown paths 404, that every asset is namespaced under `/magazine/_next/` and loads, and that the canonical already names `logisticid.com`. It also refuses any hostname that looks like a placeholder.
+
+That is the whole reason it exists. **Netlify does not validate a proxy destination at deploy time**, so a rewrite pointing at a mistyped, stale or never-created hostname deploys perfectly cleanly and then 404s every article on the live commercial site. The failure is silent at exactly the moment it is introduced.
+
+The generated block is a `[[redirects]]` rule with `status = 200` and `force = true`, whose `to` repeats `/magazine` because the Magazine app is served under `basePath: "/magazine"` and `:splat` carries only the remainder. Dropping that second `/magazine` is the single most common way this is misconfigured, and it fails as a 404 on every article rather than as an error at deploy time.
 
 Constraints to satisfy before this works (from Netlify's documentation, recorded in the ADR):
 
