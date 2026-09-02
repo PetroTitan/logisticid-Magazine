@@ -78,13 +78,19 @@ In the main repository's `netlify.toml`:
 
 ```toml
 [[redirects]]
+  from = "/magazine"
+  to = "https://<magazine-site>.netlify.app/magazine"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/magazine/*"
   to = "https://<magazine-site>.netlify.app/magazine/:splat"
   status = 200
   force = true
 ```
 
-The destination repeats `/magazine` because the Magazine application is itself served under `basePath: "/magazine"` — `:splat` carries only the remainder. This is the single most common way to misconfigure this rule.
+The exact rule must precede the wildcard. An empty wildcard requests `/magazine/` upstream; Next.js normalizes that path to `/magazine`, which otherwise re-enters the same public rewrite and loops with HTTP 308. The subtree destination repeats `/magazine` because the Magazine application is itself served under `basePath: "/magazine"` — `:splat` carries only the remainder.
 
 **Why this is the right mechanism here:**
 

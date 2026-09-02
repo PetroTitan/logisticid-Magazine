@@ -48,3 +48,22 @@ describe("base path", () => {
     }
   });
 });
+
+describe("main-site integration generator", () => {
+  const generator = readFileSync(
+    join(process.cwd(), "scripts", "print-integration-diff.mjs"),
+    "utf8",
+  );
+
+  it("emits an exact homepage rewrite before the wildcard subtree", () => {
+    // Allowing the wildcard to handle an empty splat requests /magazine/
+    // upstream. Next.js redirects that to /magazine, which re-enters the same
+    // public rewrite and loops forever. Rule order is therefore functional,
+    // not stylistic.
+    const exact = generator.indexOf('from = "/magazine"');
+    const wildcard = generator.indexOf('from = "/magazine/*"');
+
+    expect(exact).toBeGreaterThan(-1);
+    expect(wildcard).toBeGreaterThan(exact);
+  });
+});

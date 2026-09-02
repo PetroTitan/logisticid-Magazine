@@ -41,7 +41,7 @@ The script refuses to print anything until it has proved, against that exact hos
 
 That is the whole reason it exists. **Netlify does not validate a proxy destination at deploy time**, so a rewrite pointing at a mistyped, stale or never-created hostname deploys perfectly cleanly and then 404s every article on the live commercial site. The failure is silent at exactly the moment it is introduced.
 
-The generated block is a `[[redirects]]` rule with `status = 200` and `force = true`, whose `to` repeats `/magazine` because the Magazine app is served under `basePath: "/magazine"` and `:splat` carries only the remainder. Dropping that second `/magazine` is the single most common way this is misconfigured, and it fails as a 404 on every article rather than as an error at deploy time.
+The generated output contains two ordered `[[redirects]]` rules with `status = 200` and `force = true`: an exact `/magazine` rule, then the `/magazine/*` subtree. The exact rule is necessary because an empty wildcard requests `/magazine/` upstream; Next.js normalizes that to `/magazine`, which otherwise re-enters the same public rewrite as an infinite 308 loop. The subtree destination repeats `/magazine` because the Magazine app is served under `basePath: "/magazine"` and `:splat` carries only the remainder. Dropping that second `/magazine` fails as a 404 on every article rather than as an error at deploy time.
 
 Constraints to satisfy before this works (from Netlify's documentation, recorded in the ADR):
 

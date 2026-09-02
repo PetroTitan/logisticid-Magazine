@@ -6,7 +6,7 @@
 
 ## The property that makes rollback cheap
 
-The Magazine is reached **only** through one rewrite rule in the main site's `netlify.toml`. That rule is the entire integration surface.
+The Magazine is reached **only** through two ordered rewrite rules in the main site's `netlify.toml`: the exact `/magazine` homepage and the `/magazine/*` subtree. Those rules are the entire routing surface.
 
 Removing it removes the Magazine from the public site and changes nothing else. The main application is untouched by it — no shared build, no shared bundle, no shared route tree, no runtime dependency in either direction.
 
@@ -18,7 +18,7 @@ The Magazine deployment can be left running afterwards. It is not reachable from
 
 Restores `logisticid.com` to its pre-integration behaviour.
 
-1. In `PetroTitan/logisticid`, revert the commit that added the `[[redirects]]` block to `netlify.toml` (`git revert <sha>`), or delete the block.
+1. In `PetroTitan/logisticid`, revert the commit that added the two `[[redirects]]` blocks to `netlify.toml` (`git revert <sha>`), or delete both blocks.
 2. Push to `main`. Netlify rebuilds and redeploys the main site.
 3. Verify:
    - `curl -sI https://logisticid.com/magazine` → **404**

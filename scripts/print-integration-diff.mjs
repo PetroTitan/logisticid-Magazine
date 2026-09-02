@@ -110,11 +110,21 @@ console.log(`
 # the Magazine site. A 3xx here would make the Magazine's own hostname the
 # public identity of the publication.
 #
-# The destination repeats /magazine because the Magazine app is served under
-# basePath "/magazine"; :splat carries only the remainder. It must cover the
-# whole subtree, including /magazine/_next/*, or the pages render unstyled.
+# The exact rule must come first. If the wildcard handles an empty splat,
+# Netlify requests /magazine/ upstream; Next.js normalizes that to /magazine,
+# and the browser re-enters the rewrite in an infinite 308 loop.
+#
+# The subtree destination repeats /magazine because the Magazine app is served
+# under basePath "/magazine"; :splat carries only the remainder. It must cover
+# /magazine/_next/* as well as pages, or the site renders unstyled.
 #
 # Verified against ${HOST} on ${new Date().toISOString().slice(0, 10)}.
+
+[[redirects]]
+  from = "/magazine"
+  to = "https://${HOST}/magazine"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/magazine/*"

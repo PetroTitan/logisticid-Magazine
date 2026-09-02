@@ -76,6 +76,13 @@ If it should be closed properly rather than mitigated, the clean fix uses a sign
 
 ```toml
 [[redirects]]
+  from = "/magazine"
+  to = "https://<host>/magazine"
+  status = 200
+  force = true
+  headers = {X-LogisticID-Proxy = "1"}
+
+[[redirects]]
   from = "/magazine/*"
   to = "https://<host>/magazine/:splat"
   status = 200
