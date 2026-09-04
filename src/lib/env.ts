@@ -28,6 +28,16 @@ const INFRASTRUCTURE_HOST_SUFFIXES = [
   ".onrender.com",
   ".fly.dev",
   ".herokuapp.com",
+  // Added for the Railway migration. Railway issues `*.up.railway.app` to
+  // every service and offers it before any custom domain exists, so it is the
+  // hostname a deployment is tested on — which is exactly when a canonical
+  // built from it would look correct. `.railway.app` covers the shorter form.
+  ".up.railway.app",
+  ".railway.app",
+  // Railway's private network. Reaching a canonical is implausible, but this
+  // application refuses to emit a public URL it does not own, and an internal
+  // DNS name is the clearest possible case of that.
+  ".railway.internal",
 ] as const;
 
 /**
