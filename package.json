@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
@@ -14,7 +14,9 @@
     "validate:magazine": "vitest run tests/content",
     "validate:seo": "vitest run tests/seo",
     "validate:routing": "node scripts/validate-routing.mjs",
-    "validate": "eslint . && tsc --noEmit && vitest run && node scripts/validate-routing.mjs"
+    "validate": "eslint . && tsc --noEmit && vitest run && node scripts/validate-routing.mjs",
+    "postbuild": "node scripts/prepare-standalone.mjs",
+    "start:next": "next start"
   },
   "engines": {
     "node": ">=24.0.0"
