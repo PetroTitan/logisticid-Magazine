@@ -5,7 +5,7 @@
   "description": "LogisticID Magazine \u2014 European road freight insight, practical shipping guidance and logistics intelligence. An independently deployed editorial application served under the /magazine path of the LogisticID website.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/prepare-standalone.mjs",
     "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -15,7 +15,6 @@
     "validate:seo": "vitest run tests/seo",
     "validate:routing": "node scripts/validate-routing.mjs",
     "validate": "eslint . && tsc --noEmit && vitest run && node scripts/validate-routing.mjs",
-    "postbuild": "node scripts/prepare-standalone.mjs",
     "start:next": "next start"
   },
   "engines": {

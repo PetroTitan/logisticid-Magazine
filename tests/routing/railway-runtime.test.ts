@@ -31,11 +31,16 @@ describe("standalone runtime", () => {
     expect(packageJson.scripts.start).toBe("node .next/standalone/server.js");
   });
 
-  it("prepares the bundle from postbuild, not from a README step", () => {
-    // Railway runs the build script and nothing else, so a manual step would
-    // never run there. The failure is a Magazine that renders HTML with no CSS
-    // and no JavaScript while every route still returns 200.
-    expect(packageJson.scripts.postbuild).toBe("node scripts/prepare-standalone.mjs");
+  it("chains the preparation into build, not into a lifecycle hook", () => {
+    // The copy was wired to `postbuild`, and pnpm's `enable-pre-post-scripts`
+    // default has flipped between major versions — so whether it ran was a
+    // property of the package manager, not of this repository. On the main
+    // site that shipped a standalone server with no static assets and took
+    // the domain down. `&&` cannot be disabled by a setting.
+    expect(packageJson.scripts.build).toBe(
+      "next build && node scripts/prepare-standalone.mjs",
+    );
+    expect(packageJson.scripts.postbuild).toBeUndefined();
     expect(existsSync(join(ROOT, "scripts/prepare-standalone.mjs"))).toBe(true);
   });
 
