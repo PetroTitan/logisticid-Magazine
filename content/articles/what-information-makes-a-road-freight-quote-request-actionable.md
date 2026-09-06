@@ -7,16 +7,41 @@
   "subtitle": "Most quote requests cannot be answered as sent. The gap is rarely effort — it is that the missing details are ones the sender did not know were load-bearing.",
   "description": "A quote request that omits stacking, access or readiness cannot be priced without assumptions, and assumptions are what make a quote change later. This sets out what a forwarder needs and why each item matters.",
   "summary": "The information a European road freight forwarder needs to quote without assumptions, organised by what each item actually determines, and why vague answers surface later as surcharges.",
-  "tags": ["quoting", "shipper guidance", "cargo information"],
-  "authors": ["logisticid-editorial-team"],
+  "heroImage": {
+    "src": "/images/photography/curtainsider-rear-loading-1600.webp",
+    "alt": "A machine on a pallet being loaded into the back of a curtainsider over a dock plate, with the rear doors open and the roof raised.",
+    "width": 1600,
+    "height": 900,
+    "source": "Wikimedia Commons",
+    "creator": "Llann Wé²",
+    "license": "CC BY-SA 4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:W2426-Semi_Tautliner_OuvertureArriere%2BSuperireure_4421N8.jpg",
+    "credit": "Llann Wé², via Wikimedia Commons"
+  },
+  "tags": [
+    "quoting",
+    "shipper guidance",
+    "cargo information"
+  ],
+  "authors": [
+    "logisticid-editorial-team"
+  ],
   "datePublished": "2026-09-01",
   "status": "PUBLISHED",
   "schemaType": "Article",
   "relatedLogisticID": [
-    { "type": "audience", "slug": "shippers" },
-    { "type": "page", "path": "/request-a-quote" }
+    {
+      "type": "audience",
+      "slug": "shippers"
+    },
+    {
+      "type": "page",
+      "path": "/request-a-quote"
+    }
   ],
-  "relatedArticles": ["ftl-ltl-express-and-pallet-freight-explained"]
+  "relatedArticles": [
+    "ftl-ltl-express-and-pallet-freight-explained"
+  ]
 }
 ---
 

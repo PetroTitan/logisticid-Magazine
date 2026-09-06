@@ -7,13 +7,36 @@
   "subtitle": "The hierarchy of sources this publication works from, and the specific failure modes in freight writing it is designed to avoid.",
   "description": "Freight information degrades as it is copied between trade blogs. This article sets out the source hierarchy LogisticID Magazine works from, what it refuses to treat as evidence, and how citations are enforced by the build.",
   "summary": "A description of the source hierarchy, the treatment of paywalled standards, the enforcement of citations at build time, and the reasons AI-generated summaries are not treated as sources.",
-  "tags": ["editorial standards", "sourcing"],
-  "authors": ["logisticid-editorial-team"],
+  "heroImage": {
+    "src": "/images/photography/warehouse-forklift-aisle-1600.webp",
+    "alt": "A counterbalance forklift moving down an aisle between loaded pallet racking, with bulk bags and palletised goods on the racks either side.",
+    "width": 1600,
+    "height": 900,
+    "source": "Wikimedia Commons",
+    "creator": "Рогатин Александр Валерьевич",
+    "license": "CC BY 4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A1%D0%BA%D0%BB%D0%B0%D0%B4%D1%81%D0%BA%D0%BE%D0%B5_%D0%B4%D0%B2%D0%B8%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5.jpg",
+    "credit": "Рогатин Александр Валерьевич, via Wikimedia Commons"
+  },
+  "tags": [
+    "editorial standards",
+    "sourcing"
+  ],
+  "authors": [
+    "logisticid-editorial-team"
+  ],
   "datePublished": "2026-09-01",
   "status": "PUBLISHED",
   "schemaType": "Article",
-  "relatedLogisticID": [{ "type": "page", "path": "/" }],
-  "relatedArticles": ["welcome-to-logisticid-magazine"]
+  "relatedLogisticID": [
+    {
+      "type": "page",
+      "path": "/"
+    }
+  ],
+  "relatedArticles": [
+    "welcome-to-logisticid-magazine"
+  ]
 }
 ---
 
