@@ -599,16 +599,37 @@ img {
   text-decoration: underline;
 }
 
+/* ------------------------------------------------------------------ *
+ * Sources
+ *
+ * PHASE 4R. This block and `.article__aside` had byte-identical styling — the
+ * same top rule, margin and padding — so an article's EVIDENCE and its links
+ * to commercial LogisticID pages arrived looking like the same kind of thing.
+ * For a publication whose stated position is that every factual claim is
+ * sourced, making its citations indistinguishable from its outbound
+ * advertising is the wrong way round.
+ *
+ * Sources now read as apparatus: an inset panel with a blue rule, set on the
+ * page rather than after it. The commercial aside keeps the plain divider, so
+ * the visual weight follows the editorial priority.
+ * ------------------------------------------------------------------ */
 .references {
-  border-top: 1px solid var(--border);
+  background: var(--blue-soft);
+  border-left: 3px solid var(--brand-blue);
+  border-radius: 0 var(--radius-medium) var(--radius-medium) 0;
   margin-top: 3rem;
-  padding-top: 1.5rem;
+  padding: 1.4rem 1.5rem;
+}
+
+.references h2 {
+  font-size: 1.05rem;
+  margin: 0;
 }
 
 .references__list {
   display: grid;
   gap: 1rem;
-  margin: 1.25rem 0 0;
+  margin: 1rem 0 0;
   padding-left: 1.35rem;
 }
 
