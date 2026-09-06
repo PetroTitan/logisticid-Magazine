@@ -67,9 +67,48 @@ function relatedTarget(entity: RelatedLogisticIDEntity): { label: string; href: 
         label: entity.slug === "shippers" ? "LogisticID for shippers" : "LogisticID for carriers",
         href: mainSiteUrl(`/${entity.slug}`).href,
       };
-    case "page":
-      return { label: `LogisticID ${entity.path}`, href: mainSiteUrl(entity.path).href };
+    case "page": {
+      /**
+       * Named pages get their real names. This used to interpolate the path,
+       * so an article that pointed at the quote form rendered a link reading
+       * "LogisticID /request-a-quote" — a URL shown to a reader as though it
+       * were a title. Anything not named here still falls back to the path,
+       * which is ugly but honest, and visible enough that somebody adds it.
+       */
+      const names: Readonly<Record<string, string>> = {
+        "/": "LogisticID",
+        "/request-a-quote": "Request a freight quote",
+        "/road-freight": "European road freight",
+        "/freight-forwarding": "Freight forwarding",
+        "/services": "Freight services",
+      };
+      return {
+        label: names[entity.path] ?? `LogisticID ${entity.path}`,
+        href: mainSiteUrl(entity.path).href,
+      };
+    }
   }
+}
+
+/**
+ * Whether this article should offer a route to the quote form.
+ *
+ * Derived from the article's own `relatedLogisticID` mapping rather than
+ * printed on every page: an article that maps to a road service, or to the
+ * shipper audience, is about arranging freight, and a reader who has just
+ * finished it may well want to arrange some. An article about how the
+ * publication sources its information is not, and putting a quote button on it
+ * would be the advertorial drift §92 warns about.
+ *
+ * So the rule is one line and the data decides. Nothing to duplicate per
+ * article, and an article that changes subject changes its own CTA.
+ */
+function invitesAQuote(article: Article): boolean {
+  return article.relatedLogisticID.some(
+    (entity) =>
+      entity.type === "service" ||
+      (entity.type === "audience" && entity.slug === "shippers"),
+  );
 }
 
 function Byline({ article }: { article: Article }) {
@@ -207,15 +246,32 @@ export default async function ArticlePage({ params }: Params) {
           <section aria-labelledby="services-heading" className="article__aside">
             <h2 id="services-heading">On the LogisticID website</h2>
             <ul className="linked-list">
-              {article.relatedLogisticID.map((entity, index) => {
-                const target = relatedTarget(entity);
-                return (
-                  <li key={index}>
-                    <a href={target.href}>{target.label}</a>
-                  </li>
-                );
-              })}
+              {article.relatedLogisticID
+                .filter((entity) => !(entity.type === "page" && entity.path === "/request-a-quote"))
+                .map((entity, index) => {
+                  const target = relatedTarget(entity);
+                  return (
+                    <li key={index}>
+                      <a href={target.href}>{target.label}</a>
+                    </li>
+                  );
+                })}
             </ul>
+            {/*
+              The commercial route out, shown only where the article's own
+              mapping says the subject is arranging freight. Filtered out of
+              the list above first, so an article that names the quote form
+              explicitly does not get it twice.
+            */}
+            {invitesAQuote(article) && (
+              <p className="article__quote-path">
+                Have a shipment that needs arranging?{" "}
+                <a href={mainSiteUrl("/request-a-quote").href}>
+                  Send the route, cargo and dates
+                </a>{" "}
+                and a person at LogisticID will review it.
+              </p>
+            )}
           </section>
         )}
 

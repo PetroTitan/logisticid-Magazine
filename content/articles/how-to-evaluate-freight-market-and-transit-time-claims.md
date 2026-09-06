@@ -7,15 +7,40 @@
   "subtitle": "Freight numbers circulate with their methodology stripped off. A few questions restore most of what was removed.",
   "description": "Market sizes, transit times and efficiency claims are repeated across the freight web without the definitions that made them meaningful. This sets out how to check what a number actually measured.",
   "summary": "A method for evaluating freight statistics and transit-time claims: identifying the measurement unit, the population, the date and the party making the claim, with a worked example from Eurostat road freight statistics.",
-  "tags": ["market data", "transit times", "evaluating claims", "statistics"],
-  "authors": ["logisticid-editorial-team"],
+  "heroImage": {
+    "src": "/images/photography/cross-dock-loading-bays-1600.webp",
+    "alt": "Semi-trailers backed onto numbered loading bays along a warehouse wall, with the doors signed for shipping and receiving and pallets visible inside one open bay.",
+    "width": 1600,
+    "height": 900,
+    "source": "Wikimedia Commons",
+    "creator": "Raysonho @ Open Grid Scheduler / Grid Engine",
+    "license": "CC0 1.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:LoadingBay.jpg",
+    "credit": "Raysonho @ Open Grid Scheduler / Grid Engine, via Wikimedia Commons (CC0)"
+  },
+  "tags": [
+    "market data",
+    "transit times",
+    "evaluating claims",
+    "statistics"
+  ],
+  "authors": [
+    "logisticid-editorial-team"
+  ],
   "datePublished": "2026-09-01",
   "status": "PUBLISHED",
   "schemaType": "Article",
   "jurisdiction": "European Union",
   "informationCurrentAsOf": "2026-09-01",
-  "relatedLogisticID": [{ "type": "audience", "slug": "shippers" }],
-  "relatedArticles": ["how-logisticid-magazine-sources-freight-information"],
+  "relatedLogisticID": [
+    {
+      "type": "audience",
+      "slug": "shippers"
+    }
+  ],
+  "relatedArticles": [
+    "how-logisticid-magazine-sources-freight-information"
+  ],
   "sources": [
     {
       "id": "eurostat-road-freight",

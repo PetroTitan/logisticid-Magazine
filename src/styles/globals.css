@@ -661,6 +661,19 @@ img {
   margin: 0 0 0.9rem;
 }
 
+/* The commercial route out of an article. Deliberately a sentence with a link
+   in it rather than a button: an editorial page that ends in a call-to-action
+   button reads as advertising, and the reader has just been given reasons to
+   trust the publication's independence. */
+.article__quote-path {
+  border-left: 3px solid var(--brand-orange);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 1.4rem 0 0;
+  padding: 0.15rem 0 0.15rem 1rem;
+}
+
 .linked-list {
   display: grid;
   gap: 0.5rem;

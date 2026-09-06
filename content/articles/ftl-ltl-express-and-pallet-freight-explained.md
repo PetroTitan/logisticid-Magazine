@@ -7,20 +7,56 @@
   "subtitle": "The four road freight service types are not four price points for the same journey. They are different arrangements of the vehicle, and that is what decides which one fits.",
   "description": "Full truckload, part load, express and pallet freight differ in who else is on the vehicle and how often the cargo is handled. This explains what actually separates them and which questions decide the choice.",
   "summary": "An explanation of the four common European road freight service types in terms of vehicle exclusivity and handling frequency, with the trade-offs each implies and the questions that determine the choice.",
-  "tags": ["ftl", "ltl", "pallet freight", "express freight", "load types"],
-  "authors": ["logisticid-editorial-team"],
+  "heroImage": {
+    "src": "/images/photography/curtainsider-curtain-open-1600.webp",
+    "alt": "A curtainsider semi-trailer with the curtain drawn fully back along one side, showing the empty deck and the load-restraint battens down its length.",
+    "width": 1600,
+    "height": 900,
+    "source": "Wikimedia Commons",
+    "creator": "Jk20301",
+    "license": "CC BY-SA 4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Krone_Tautliner.jpg",
+    "credit": "Jk20301, via Wikimedia Commons"
+  },
+  "tags": [
+    "ftl",
+    "ltl",
+    "pallet freight",
+    "express freight",
+    "load types"
+  ],
+  "authors": [
+    "logisticid-editorial-team"
+  ],
   "datePublished": "2026-09-01",
   "status": "PUBLISHED",
   "featured": true,
   "schemaType": "Article",
   "relatedLogisticID": [
-    { "type": "service", "slug": "ftl" },
-    { "type": "service", "slug": "ltl" },
-    { "type": "service", "slug": "express" },
-    { "type": "service", "slug": "pallets" },
-    { "type": "audience", "slug": "shippers" }
+    {
+      "type": "service",
+      "slug": "ftl"
+    },
+    {
+      "type": "service",
+      "slug": "ltl"
+    },
+    {
+      "type": "service",
+      "slug": "express"
+    },
+    {
+      "type": "service",
+      "slug": "pallets"
+    },
+    {
+      "type": "audience",
+      "slug": "shippers"
+    }
   ],
-  "relatedArticles": ["what-information-makes-a-road-freight-quote-request-actionable"]
+  "relatedArticles": [
+    "what-information-makes-a-road-freight-quote-request-actionable"
+  ]
 }
 ---
 
