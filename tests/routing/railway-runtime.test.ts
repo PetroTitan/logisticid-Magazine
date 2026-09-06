@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { isInfrastructureHost } from "@/lib/env";
+import { getSiteOrigin, isInfrastructureHost } from "@/lib/env";
 
 /**
  * Guards on the Railway hosting migration for the Magazine.
@@ -110,7 +110,7 @@ describe("security headers", () => {
 });
 
 describe("production detection", () => {
-  it("recognises Railway, and still recognises Netlify", () => {
+  it("recognises Railway in both production detectors", () => {
     // If the host is not recognised, `isProductionDeployment()` returns false
     // and every response gets `X-Robots-Tag: noindex, nofollow`. The Magazine
     // would go live and quietly ask the entire web not to index it — a failure
@@ -118,6 +118,25 @@ describe("production detection", () => {
     expect(nextConfig).toContain("RAILWAY_ENVIRONMENT_NAME");
     expect(nextConfig).toContain("CONTEXT");
     expect(nextConfig).toContain("VERCEL_ENV");
+
+    const previousOrigin = process.env.NEXT_PUBLIC_SITE_ORIGIN;
+    const previousRailwayEnvironment = process.env.RAILWAY_ENVIRONMENT_NAME;
+
+    try {
+      delete process.env.NEXT_PUBLIC_SITE_ORIGIN;
+      process.env.RAILWAY_ENVIRONMENT_NAME = "production";
+
+      expect(() => getSiteOrigin()).toThrow(/NEXT_PUBLIC_SITE_ORIGIN must be set/);
+    } finally {
+      if (previousOrigin === undefined) delete process.env.NEXT_PUBLIC_SITE_ORIGIN;
+      else process.env.NEXT_PUBLIC_SITE_ORIGIN = previousOrigin;
+
+      if (previousRailwayEnvironment === undefined) {
+        delete process.env.RAILWAY_ENVIRONMENT_NAME;
+      } else {
+        process.env.RAILWAY_ENVIRONMENT_NAME = previousRailwayEnvironment;
+      }
+    }
   });
 });
 

@@ -66,13 +66,15 @@ export function hasConfiguredOrigin(): boolean {
  * True on a real production deployment, as opposed to a local or CI build.
  *
  * `NODE_ENV` is "production" during every `next build`, so it cannot make this
- * distinction. Netlify sets `CONTEXT`, Vercel sets `VERCEL_ENV`. Both are
- * checked so the guard cannot be disabled by changing host.
+ * distinction. Netlify sets `CONTEXT`, Vercel sets `VERCEL_ENV`, and Railway
+ * sets `RAILWAY_ENVIRONMENT_NAME`. All three are checked so the guard cannot
+ * be disabled by changing host.
  */
 export function isProductionDeployment(): boolean {
   return (
     process.env.CONTEXT === "production" ||
-    process.env.VERCEL_ENV === "production"
+    process.env.VERCEL_ENV === "production" ||
+    process.env.RAILWAY_ENVIRONMENT_NAME === "production"
   );
 }
 
