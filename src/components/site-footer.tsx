@@ -5,6 +5,7 @@ import { defaultLocale, type Locale } from "@/config/locales";
 import { strings } from "@/config/ui-strings";
 import { articlesInSection } from "@/lib/corpus";
 import { sectionPath } from "@/lib/localized-routes";
+import { mainSiteTarget } from "@/lib/main-site-links";
 import { publisher } from "@/config/publisher";
 import { mainSiteUrl, site } from "@/lib/site";
 
@@ -79,19 +80,29 @@ export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {})
             <h2 className="site-footer__heading">LogisticID</h2>
             <ul className="site-footer__list">
               <li>
-                <a href={mainSiteUrl("/").href}>Home</a>
+                <a href={mainSiteUrl(mainSiteTarget("/", locale).path).href}>
+                  {localized ? "Startseite" : "Home"}
+                </a>
               </li>
               <li>
-                <a href={mainSiteUrl("/road-freight").href}>Road freight</a>
+                <a href={mainSiteUrl(mainSiteTarget("/road-freight", locale).path).href}>
+                  {localized ? "Straßengüterverkehr" : "Road freight"}
+                </a>
               </li>
               <li>
-                <a href={mainSiteUrl("/shippers").href}>For shippers</a>
+                <a href={mainSiteUrl("/shippers").href} hrefLang="en" lang="en">
+                  For shippers
+                </a>
               </li>
               <li>
-                <a href={mainSiteUrl("/carriers").href}>For carriers</a>
+                <a href={mainSiteUrl("/carriers").href} hrefLang="en" lang="en">
+                  For carriers
+                </a>
               </li>
               <li>
-                <a href={mainSiteUrl("/contact").href}>Contact</a>
+                <a href={mainSiteUrl(mainSiteTarget("/contact", locale).path).href}>
+                  {localized ? "Kontakt" : "Contact"}
+                </a>
               </li>
             </ul>
           </div>

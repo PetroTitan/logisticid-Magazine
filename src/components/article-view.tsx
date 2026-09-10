@@ -15,6 +15,7 @@ import type { Article, RelatedLogisticIDEntity } from "@/content/types";
 import { allPublicArticles, articleById } from "@/lib/corpus";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { articleCluster, articlePath, indexPath, sectionPath } from "@/lib/localized-routes";
+import { FOREIGN_LANGUAGE_MARKER, mainSiteTarget } from "@/lib/main-site-links";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
 /**
@@ -44,7 +45,7 @@ function formatDate(iso: string, locale: Locale): string {
 function relatedTarget(
   entity: RelatedLogisticIDEntity,
   locale: Locale,
-): { label: string; href: string } {
+): { label: string; href: string; foreignLanguage: boolean } {
   switch (entity.type) {
     case "service": {
       const names =
@@ -61,12 +62,15 @@ function relatedTarget(
               express: "Express freight",
               pallets: "Pallet freight",
             } as const);
+      const target = mainSiteTarget(`/road-freight/${entity.slug}`, locale);
       return {
         label: names[entity.slug],
-        href: mainSiteUrl(`/road-freight/${entity.slug}`).href,
+        href: mainSiteUrl(target.path).href,
+        foreignLanguage: target.foreignLanguage,
       };
     }
     case "audience":
+      const target = mainSiteTarget(`/${entity.slug}`, locale);
       return {
         label:
           locale === "de"
@@ -76,7 +80,8 @@ function relatedTarget(
             : entity.slug === "shippers"
               ? "LogisticID for shippers"
               : "LogisticID for carriers",
-        href: mainSiteUrl(`/${entity.slug}`).href,
+        href: mainSiteUrl(target.path).href,
+        foreignLanguage: target.foreignLanguage,
       };
     case "page": {
       /**
@@ -110,17 +115,12 @@ function relatedTarget(
           "/road-freight": "Europäischer Straßengüterverkehr",
         },
       };
-      const germanPaths: Readonly<Record<string, string>> = {
-        "/request-a-quote": "/de/frachtanfrage",
-        "/road-freight": "/de/strassengueterverkehr",
-        "/": "/de",
-      };
       const label = names[locale][entity.path] ?? names.en[entity.path];
-      const path =
-        locale === "en" ? entity.path : (germanPaths[entity.path] ?? entity.path);
+      const target = mainSiteTarget(entity.path, locale);
       return {
         label: label ?? `LogisticID ${entity.path}`,
-        href: mainSiteUrl(path).href,
+        href: mainSiteUrl(target.path).href,
+        foreignLanguage: target.foreignLanguage,
       };
     }
   }
@@ -317,7 +317,15 @@ export function ArticleView({ article, locale }: { article: Article; locale: Loc
                   const target = relatedTarget(entity, locale);
                   return (
                     <li key={index}>
-                      <a href={target.href}>{target.label}</a>
+                      {/* A destination in another language says so, and carries
+                          `hrefLang` so a crawler knows before following it. */}
+                      <a
+                        href={target.href}
+                        {...(target.foreignLanguage ? { hrefLang: "en" } : {})}
+                      >
+                        {target.label}
+                        {target.foreignLanguage ? FOREIGN_LANGUAGE_MARKER[locale] : ""}
+                      </a>
                     </li>
                   );
                 })}

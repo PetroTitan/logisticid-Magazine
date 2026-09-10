@@ -28,6 +28,7 @@ import {
   sectionPath,
 } from "@/lib/localized-routes";
 import { rssFeed, sitemapXml, articleUrl } from "@/lib/feeds";
+import { FOREIGN_LANGUAGE_MARKER, mainSiteTarget } from "@/lib/main-site-links";
 
 /**
  * Guards on the Magazine's localization.
@@ -338,6 +339,36 @@ describe("feeds stay in one language", () => {
     for (const article of corpus) {
       expect(xml, `${article.id} is missing from the sitemap`).toContain(articleUrl(article));
     }
+  });
+});
+
+describe("links into the main site", () => {
+  it("sends a German reader to a German page where one exists", () => {
+    for (const path of ["/", "/request-a-quote", "/road-freight", "/contact"]) {
+      const target = mainSiteTarget(path, "de");
+      expect(target.path, path).toMatch(/^\/de/);
+      expect(target.foreignLanguage, path).toBe(false);
+    }
+  });
+
+  it("marks a destination that is not in the reader's language", () => {
+    /**
+     * MEASURED ON A SERVED PAGE. The German article's related list rendered
+     * "LogisticID für Versender" — a German label — pointing at the English
+     * `/shippers` page with nothing saying so. A German label on an English
+     * destination promises a German page and delivers an English one.
+     */
+    const target = mainSiteTarget("/shippers", "de");
+    expect(target.path).toBe("/shippers");
+    expect(target.foreignLanguage).toBe(true);
+    expect(FOREIGN_LANGUAGE_MARKER.de).not.toBe("");
+  });
+
+  it("marks nothing for a reader already in the default language", () => {
+    for (const path of ["/", "/shippers", "/request-a-quote"]) {
+      expect(mainSiteTarget(path, "en"), path).toEqual({ path, foreignLanguage: false });
+    }
+    expect(FOREIGN_LANGUAGE_MARKER.en).toBe("");
   });
 });
 
