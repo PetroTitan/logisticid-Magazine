@@ -1,3 +1,5 @@
+import type { Locale } from "@/config/locales";
+
 /**
  * The editorial schema of LogisticID Magazine.
  *
@@ -153,6 +155,29 @@ export type Article = {
   id: string;
   slug: string;
   section: string;
+  /**
+   * The language the article is written in.
+   *
+   * Defaults to English in the loader, so every article that predates
+   * localization keeps its meaning without being edited. It decides the URL
+   * the article occupies, the `lang` of the document it is served in, which
+   * feed and search index it belongs to, and — with `translationOf` — whether
+   * it carries an `hreflang` cluster.
+   */
+  locale: Locale;
+  /**
+   * The `id` of the article this one translates, where it translates one.
+   *
+   * Pairing is EXPLICIT rather than derived from a matching slug: a German
+   * article's slug is German, so no rule over slugs could find its English
+   * counterpart, and guessing would produce an `hreflang` pointing at whatever
+   * happened to look similar.
+   *
+   * Only a paired article gets alternates. An original German article — one
+   * written in German with no English counterpart — is a legitimate thing to
+   * publish and advertises no translation, which is correct.
+   */
+  translationOf?: string;
   title: string;
   /** The standfirst: one sentence expanding the headline. */
   subtitle: string;

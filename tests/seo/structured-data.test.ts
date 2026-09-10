@@ -4,6 +4,7 @@ import { loadArticles, publishedArticles } from "@/content/load";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { buildSearchIndex, searchDocuments } from "@/lib/search";
 import { atomFeed, jsonFeed, latestFeed, rssFeed, sitemapXml } from "@/lib/feeds";
+import { articlePath } from "@/lib/localized-routes";
 import { magazineUrl } from "@/lib/site";
 
 const articles = publishedArticles(loadArticles());
@@ -19,7 +20,10 @@ describe("article structured data", () => {
     for (const article of articles) {
       const node = articleJsonLd(article);
       expect(node["headline"]).toBe(article.title);
-      expect(node["url"]).toBe(magazineUrl(`/${article.section}/${article.slug}`).href);
+      // Through `articlePath`, so a German article's schema names its `/de/`
+      // URL. Composed from section and slug alone this asserted an English
+      // path for the German article — a path that returns 404.
+      expect(node["url"]).toBe(magazineUrl(articlePath(article)).href);
       expect(node["datePublished"]).toBe(article.datePublished);
       expect(Array.isArray(node["author"])).toBe(true);
       expect(node["publisher"]).toBeDefined();

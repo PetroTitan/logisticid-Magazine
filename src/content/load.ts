@@ -1,3 +1,4 @@
+import { defaultLocale, isLocale, locales, type Locale } from "@/config/locales";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -270,6 +271,27 @@ export function parseArticleFile(file: string, contents: string, today: string):
     bad(file, `section "${section}" is not a registered section`);
   }
 
+  /**
+   * The language, defaulting to English.
+   *
+   * A default rather than a required field, so that every article written
+   * before the Magazine had a second language keeps its meaning without being
+   * edited — and so that adding a locale never requires touching the corpus.
+   */
+  const localeRaw = raw["locale"];
+  if (localeRaw !== undefined && (typeof localeRaw !== "string" || !isLocale(localeRaw))) {
+    bad(file, `locale must be one of ${locales.join(", ")} (got ${JSON.stringify(localeRaw)})`);
+  }
+  const locale: Locale = localeRaw === undefined ? defaultLocale : (localeRaw as Locale);
+
+  const translationOf = optionalStr(file, raw, "translationOf");
+  if (translationOf !== undefined && locale === defaultLocale) {
+    bad(
+      file,
+      `translationOf is set on a ${defaultLocale} article. The pairing is recorded on the translation, once, so that one edge cannot be declared twice and disagree with itself.`,
+    );
+  }
+
   const status = str(file, raw, "status");
   if (!STATUSES.includes(status as ArticleStatus)) {
     bad(file, `status "${status}" is not one of ${STATUSES.join(", ")}`);
@@ -359,6 +381,8 @@ export function parseArticleFile(file: string, contents: string, today: string):
     id: str(file, raw, "id"),
     slug,
     section,
+    locale,
+    ...(translationOf === undefined ? {} : { translationOf }),
     title: str(file, raw, "title"),
     subtitle: str(file, raw, "subtitle"),
     description: str(file, raw, "description"),
@@ -490,6 +514,41 @@ export function validateCorpus(articles: readonly Article[]): void {
     if (!publishedSections.has(section)) {
       throw new ContentError(`section "${section}" has no published articles`);
     }
+  }
+
+  /* ---- localization ---- */
+
+  /**
+   * Translation pairing has to be 1:1 and has to point at something real.
+   *
+   * A `translationOf` naming a missing article would emit an `hreflang`
+   * cluster pointing at a URL that does not exist, and two German articles
+   * claiming the same English source would emit two clusters that disagree
+   * about which is the German version. Both fail the build here rather than
+   * shipping to a crawler.
+   */
+  const translations = new Map<string, Article>();
+  for (const article of articles) {
+    if (article.translationOf === undefined) continue;
+    const source = byId.get(article.translationOf);
+    if (source === undefined) {
+      throw new ContentError(
+        `article "${article.id}" is a translation of "${article.translationOf}", which does not exist`,
+      );
+    }
+    if (source.locale === article.locale) {
+      throw new ContentError(
+        `article "${article.id}" declares itself a translation of "${source.id}", which is in the same language`,
+      );
+    }
+    const key = `${article.translationOf}:${article.locale}`;
+    const existing = translations.get(key);
+    if (existing !== undefined) {
+      throw new ContentError(
+        `"${existing.id}" and "${article.id}" both claim to be the ${article.locale} translation of "${article.translationOf}"`,
+      );
+    }
+    translations.set(key, article);
   }
 }
 

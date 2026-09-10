@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { defaultLocale, localeDetails, type Locale } from "@/config/locales";
 import { magazineUrl, site } from "@/lib/site";
 
 /**
@@ -25,16 +26,35 @@ export function pageMetadata(options: {
   socialDescription?: string;
   /** Set for pages that must never be indexed, such as search results. */
   noindex?: boolean;
+  /** The language the page is written in. Drives `og:locale` and hreflang. */
+  locale?: Locale;
+  /**
+   * The hreflang cluster, as absolute URLs keyed by `hreflang` value.
+   *
+   * Passed in rather than derived here, because only the caller knows whether
+   * a translation exists — for an article that is an explicit `translationOf`
+   * edge in the corpus, and for a section index it is whether that section has
+   * anything published in the other language. Omitted means no alternates,
+   * which is what a page with one language must advertise.
+   */
+  languages?: Record<string, string>;
   openGraph?: { type: "article"; publishedTime: string; modifiedTime?: string };
 }): Metadata {
   const canonical = magazineUrl(options.path).href;
+  const locale = options.locale ?? defaultLocale;
   const socialTitle = options.socialTitle ?? options.title;
   const socialDescription = options.socialDescription ?? options.description;
 
   return {
     title: options.title,
     description: options.description,
-    alternates: { canonical },
+    alternates: {
+      // Each language self-canonicalises. A German article never canonicalises
+      // to the English one it translates: it is independent content, and
+      // pointing it at the English URL would ask a search engine to drop it.
+      canonical,
+      ...(options.languages === undefined ? {} : { languages: options.languages }),
+    },
     // `follow` is deliberate on the noindex pages: a search result page should
     // not be indexed, but the articles it links to should still be reachable.
     ...(options.noindex === true ? { robots: { index: false, follow: true } } : {}),
@@ -44,7 +64,7 @@ export function pageMetadata(options: {
       siteName: site.name,
       title: socialTitle,
       description: socialDescription,
-      locale: site.locale,
+      locale: localeDetails[locale].hreflang,
       ...(options.openGraph === undefined
         ? {}
         : {

@@ -1,6 +1,10 @@
 import Link from "next/link";
 
 import { sections } from "@/content/sections";
+import { defaultLocale, type Locale } from "@/config/locales";
+import { strings } from "@/config/ui-strings";
+import { articlesInSection } from "@/lib/corpus";
+import { sectionPath } from "@/lib/localized-routes";
 import { publisher } from "@/config/publisher";
 import { mainSiteUrl, site } from "@/lib/site";
 
@@ -12,26 +16,31 @@ import { mainSiteUrl, site } from "@/lib/site";
  * than linked once from an "about" page because they are the basis on which a
  * reader should judge everything above them.
  */
-export function SiteFooter() {
+export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {}) {
   const year = new Date().getUTCFullYear();
+  const ui = strings(locale);
+  const localized = locale !== defaultLocale;
+  const visibleSections = localized
+    ? sections.filter((section) => articlesInSection(section.slug, locale).length > 0)
+    : sections;
 
   return (
     <footer className="site-footer">
       <div className="shell">
         <div className="site-footer__grid">
           <div>
-            <h2 className="site-footer__heading">Sections</h2>
+            <h2 className="site-footer__heading">{ui.sections}</h2>
             <ul className="site-footer__list">
-              {sections.map((section) => (
+              {visibleSections.map((section) => (
                 <li key={section.slug}>
-                  <Link href={`/${section.slug}`}>{section.name}</Link>
+                  <Link href={sectionPath(section.slug, locale)}>{section.name}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h2 className="site-footer__heading">Editorial standards</h2>
+            <h2 className="site-footer__heading">{ui.editorialStandards}</h2>
             <ul className="site-footer__list">
               <li>
                 <Link href="/editorial-policy">Editorial policy</Link>
@@ -52,7 +61,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h2 className="site-footer__heading">Follow</h2>
+            <h2 className="site-footer__heading">{ui.follow}</h2>
             <ul className="site-footer__list">
               <li>
                 <Link href="/rss.xml">RSS feed</Link>
@@ -88,12 +97,26 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="site-footer__note">
-          {site.name} is published by {site.parentName}. It is written to explain how European
-          road freight works. It is general information and reporting, not advice on a particular
-          shipment — see the{" "}
-          <Link href="/editorial-policy">editorial policy</Link> for what that means in practice.
-        </p>
+        {localized ? (
+          <p className="site-footer__note">
+            {site.name} {ui.publishedBy} {site.parentName}. Die Beiträge erklären, wie
+            europäischer Straßengüterverkehr funktioniert. Sie sind allgemeine
+            Information und Berichterstattung, keine Beratung zu einer konkreten
+            Sendung.{" "}
+            {ui.readInEnglishNote}{" "}
+            <Link href="/editorial-policy" hrefLang="en" lang="en">
+              Editorial policy
+            </Link>
+            .
+          </p>
+        ) : (
+          <p className="site-footer__note">
+            {site.name} is published by {site.parentName}. It is written to explain how European
+            road freight works. It is general information and reporting, not advice on a particular
+            shipment — see the{" "}
+            <Link href="/editorial-policy">editorial policy</Link> for what that means in practice.
+          </p>
+        )}
 
         {/*
           The same legal line the main site's footer carries, and for the same
