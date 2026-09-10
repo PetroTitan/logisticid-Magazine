@@ -6,6 +6,7 @@ import { sections } from "@/content/sections";
 import { articlesInSection, publicArticles } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { indexPath, sectionPath } from "@/lib/localized-routes";
+import { mainSiteTarget } from "@/lib/main-site-links";
 import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
@@ -52,7 +53,7 @@ export default function GermanHomePage() {
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "LogisticID", url: mainSiteUrl("/").href },
+          { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", "de").path).href },
           { name: site.name, url: magazineUrl(indexPath("de")).href },
         ])}
       />

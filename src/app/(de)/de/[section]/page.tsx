@@ -9,6 +9,7 @@ import { getSection, sections } from "@/content/sections";
 import { articlesInSection } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { indexPath, sectionPath } from "@/lib/localized-routes";
+import { mainSiteTarget } from "@/lib/main-site-links";
 import { pageMetadata } from "@/lib/metadata";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
@@ -56,13 +57,14 @@ export default async function GermanSectionPage({ params }: Params) {
   if (section === undefined) notFound();
 
   const articles = articlesInSection(section.slug, "de");
-  const ui = strings("de");
+  const locale = "de" as const;
+  const ui = strings(locale);
 
   return (
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "LogisticID", url: mainSiteUrl("/").href },
+          { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", locale).path).href },
           { name: site.name, url: magazineUrl(indexPath("de")).href },
           { name: section.name, url: magazineUrl(sectionPath(section.slug, "de")).href },
         ])}
@@ -70,8 +72,12 @@ export default async function GermanSectionPage({ params }: Params) {
 
       <div className="shell page">
         <Breadcrumbs
+          locale={locale}
           crumbs={[
-            { label: "LogisticID", href: mainSiteUrl("/").href },
+            // The trail climbs to the main site IN THE READER'S LANGUAGE. A
+            // German page whose breadcrumb root is the English home describes a
+            // hierarchy that changes language halfway up.
+            { label: "LogisticID", href: mainSiteUrl(mainSiteTarget("/", locale).path).href },
             { label: "Magazine", href: indexPath("de") },
             { label: section.name },
           ]}

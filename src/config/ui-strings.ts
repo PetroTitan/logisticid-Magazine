@@ -26,6 +26,8 @@ export type UiStrings = {
 
   /* Article furniture. */
   readonly magazineCrumb: string;
+  /** The breadcrumb landmark's accessible name. */
+  readonly breadcrumbLabel: string;
   readonly byline: string;
   readonly published: string;
   readonly updated: string;
@@ -55,6 +57,7 @@ export const uiStrings: Readonly<Record<Locale, UiStrings>> = {
     publishedBy: "is published by",
     readInEnglishNote: "",
     magazineCrumb: "Magazine",
+    breadcrumbLabel: "Breadcrumb",
     byline: "By",
     published: "Published",
     updated: "Updated",
@@ -83,6 +86,7 @@ export const uiStrings: Readonly<Record<Locale, UiStrings>> = {
     readInEnglishNote:
       "Die redaktionellen Richtlinien und das übrige Archiv liegen bislang nur auf Englisch vor.",
     magazineCrumb: "Magazin",
+    breadcrumbLabel: "Brotkrumennavigation",
     byline: "Von",
     published: "Veröffentlicht",
     updated: "Aktualisiert",

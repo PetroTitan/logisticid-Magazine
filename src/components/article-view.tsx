@@ -226,7 +226,7 @@ export function ArticleView({ article, locale }: { article: Article; locale: Loc
       <JsonLd data={articleJsonLd(article)} />
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "LogisticID", url: mainSiteUrl("/").href },
+          { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", locale).path).href },
           { name: site.name, url: magazineUrl(indexPath(locale)).href },
           ...(section === undefined
             ? []
@@ -242,8 +242,12 @@ export function ArticleView({ article, locale }: { article: Article; locale: Loc
 
       <article className="shell article">
         <Breadcrumbs
+          locale={locale}
           crumbs={[
-            { label: "LogisticID", href: mainSiteUrl("/").href },
+            // The trail climbs to the main site IN THE READER'S LANGUAGE. A
+            // German page whose breadcrumb root is the English home describes a
+            // hierarchy that changes language halfway up.
+            { label: "LogisticID", href: mainSiteUrl(mainSiteTarget("/", locale).path).href },
             { label: ui.magazineCrumb, href: indexPath(locale) },
             ...(section === undefined
               ? []
