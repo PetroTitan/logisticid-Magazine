@@ -1,5 +1,6 @@
 import "server-only";
 
+import { defaultLocale, type Locale } from "@/config/locales";
 import { loadArticles, publishedArticles } from "@/content/load";
 import type { Article } from "@/content/types";
 
@@ -18,21 +19,49 @@ export function allArticles(): Article[] {
   return cache;
 }
 
-/** Public articles, newest first. */
-export function publicArticles(): Article[] {
+/**
+ * Every public article, in every language, newest first.
+ *
+ * Only the sitemap and the translation-cluster lookup want this. Everything
+ * else wants one language, and asking for "the articles" when you mean "the
+ * English articles" is how a German article ends up in an English feed.
+ */
+export function allPublicArticles(): Article[] {
   return publishedArticles(allArticles());
 }
 
-export function articlesInSection(section: string): Article[] {
-  return publicArticles().filter((article) => article.section === section);
+/**
+ * Public articles in one language, newest first.
+ *
+ * `publicArticles()` DEFAULTS TO ENGLISH, and that default is the reason no
+ * existing caller had to change when the Magazine gained a second language.
+ * The English index, the English section pages, the feeds, the search index,
+ * the corrections list and the author pages all call it, and every one of them
+ * became locale-correct without an edit — rather than each having to remember
+ * to filter, which is the version somebody forgets.
+ */
+export function publicArticles(locale: Locale = defaultLocale): Article[] {
+  return allPublicArticles().filter((article) => article.locale === locale);
 }
 
-export function findArticle(section: string, slug: string): Article | undefined {
-  return publicArticles().find(
+export function articlesInSection(
+  section: string,
+  locale: Locale = defaultLocale,
+): Article[] {
+  return publicArticles(locale).filter((article) => article.section === section);
+}
+
+export function findArticle(
+  section: string,
+  slug: string,
+  locale: Locale = defaultLocale,
+): Article | undefined {
+  return publicArticles(locale).find(
     (article) => article.section === section && article.slug === slug,
   );
 }
 
+/** Any public article by id, in any language — used to resolve cross-references. */
 export function articleById(id: string): Article | undefined {
-  return publicArticles().find((article) => article.id === id);
+  return allPublicArticles().find((article) => article.id === id);
 }

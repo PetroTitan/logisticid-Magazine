@@ -11,9 +11,11 @@ import Link from "next/link";
  * `href` is a Magazine-relative path — Next.js adds the `/magazine` base path
  * to it automatically.
  */
-export function Brand() {
+export function Brand({ href = "/" }: { href?: string } = {}) {
   return (
-    <Link aria-label="LogisticID Magazine home" className="brand" href="/">
+    // A localized layout passes its own index, so the wordmark does not
+    // silently change language.
+    <Link aria-label="LogisticID Magazine home" className="brand" href={href}>
       <svg aria-hidden="true" className="brand__mark" viewBox="0 0 48 48">
         <path d="M12 10v17c0 5 4 9 9 9h15" />
         <circle cx="12" cy="10" r="4" />

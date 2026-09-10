@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { articlePath } from "@/lib/localized-routes";
 
 import { getSection } from "@/content/sections";
 import type { Article } from "@/content/types";
@@ -23,7 +24,7 @@ export function ArticleCard({ article }: { article: Article }) {
         <span>{article.readingTime} min read</span>
       </p>
       <h3 className="article-card__title">
-        <Link href={`/${article.section}/${article.slug}`}>{article.title}</Link>
+        <Link href={articlePath(article)}>{article.title}</Link>
       </h3>
       <p className="article-card__summary">{article.description}</p>
     </li>

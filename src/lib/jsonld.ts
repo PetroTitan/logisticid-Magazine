@@ -2,6 +2,8 @@ import { getAuthor } from "@/content/authors";
 import { getSection } from "@/content/sections";
 import type { Article } from "@/content/types";
 import { publisher as publisherIdentity } from "@/config/publisher";
+import { localeDetails } from "@/config/locales";
+import { articlePath } from "@/lib/localized-routes";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
 /**
@@ -58,7 +60,18 @@ function authorNode(slug: string): JsonObject {
 }
 
 export function articleJsonLd(article: Article): JsonObject {
-  const url = magazineUrl(`/${article.section}/${article.slug}`).href;
+  /**
+   * Built through `articlePath`, so a German article's `url` and
+   * `mainEntityOfPage` carry its locale prefix.
+   *
+   * MEASURED, AND THE REASON THIS IS NOT `/${section}/${slug}`. Composed from
+   * the section and slug alone, the German article's structured data named
+   * `/magazine/shipping-guides/welche-angaben-…` — an English path that does
+   * not exist and returns 404 — while the page's own canonical correctly named
+   * the `/de/` one. Two identities for one page, one of them broken, and
+   * nothing in the build said so.
+   */
+  const url = magazineUrl(articlePath(article)).href;
 
   const node: JsonObject = {
     "@context": "https://schema.org",
@@ -70,7 +83,10 @@ export function articleJsonLd(article: Article): JsonObject {
     datePublished: article.datePublished,
     author: article.authors.map(authorNode),
     publisher: publisher(),
-    inLanguage: site.locale,
+    // The article's own language, not the publication's default. A German
+    // article declaring `en` tells a search engine the text is English, which
+    // is the one thing the localization exists to state correctly.
+    inLanguage: localeDetails[article.locale].hreflang,
     isAccessibleForFree: true,
   };
 

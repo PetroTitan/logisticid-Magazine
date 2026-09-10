@@ -1,7 +1,10 @@
 import Link from "next/link";
 
 import { Brand } from "@/components/brand";
+import { defaultLocale, localeDetails, type Locale } from "@/config/locales";
 import { sections } from "@/content/sections";
+import { articlesInSection } from "@/lib/corpus";
+import { indexPath, sectionPath } from "@/lib/localized-routes";
 import { mainSiteUrl } from "@/lib/site";
 
 /**
@@ -16,20 +19,49 @@ import { mainSiteUrl } from "@/lib/site";
  * relative "/" would resolve to `/magazine/` under the base path and simply
  * return the reader to where they already are.
  */
-export function SiteHeader() {
+export function SiteHeader({ locale = defaultLocale }: { locale?: Locale } = {}) {
+  /*
+   * A localized header lists the sections that have something published in
+   * that language. A "Rubriken" link landing on an English section index is
+   * the accidental mixed-language navigation the localization exists to avoid,
+   * and the reader only discovers it after the click.
+   *
+   * Section NAMES stay as the registry writes them: section identity is
+   * language-neutral, and translating the display names is a taxonomy decision
+   * taken once for all sections rather than per header. See
+   * `src/lib/localized-routes.ts`.
+   */
+  const visible =
+    locale === defaultLocale
+      ? sections
+      : sections.filter((section) => articlesInSection(section.slug, locale).length > 0);
+
   return (
     <header className="site-header">
       <div className="shell site-header__inner">
-        <Brand />
+        <Brand href={indexPath(locale)} />
         <nav aria-label="LogisticID Magazine" className="site-nav">
-          {sections.map((section) => (
-            <Link className="site-nav__link" href={`/${section.slug}`} key={section.slug}>
+          {visible.map((section) => (
+            <Link
+              className="site-nav__link"
+              href={sectionPath(section.slug, locale)}
+              key={section.slug}
+            >
               {section.name}
             </Link>
           ))}
-          <Link className="site-nav__link" href="/search">
-            Search
-          </Link>
+          {locale === defaultLocale && (
+            <Link className="site-nav__link" href="/search">
+              Search
+            </Link>
+          )}
+          {locale !== defaultLocale && (
+            /* Search indexes the English corpus only, so it is offered as an
+               English destination rather than presented as a German feature. */
+            <Link className="site-nav__link" href="/search" hrefLang="en" lang="en">
+              {localeDetails.en.nativeLabel}
+            </Link>
+          )}
           <a className="site-nav__link site-nav__exit" href={mainSiteUrl("/").href}>
             LogisticID.com
           </a>

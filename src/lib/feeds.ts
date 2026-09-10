@@ -1,4 +1,5 @@
 import type { Article } from "@/content/types";
+import { articlePath } from "@/lib/localized-routes";
 import { magazineUrl, site } from "@/lib/site";
 
 /**
@@ -42,7 +43,10 @@ export function lastChanged(article: Article): string {
 }
 
 export function articleUrl(article: Article): string {
-  return magazineUrl(`/${article.section}/${article.slug}`).href;
+  // Through `articlePath`, so a German article's URL carries its locale
+  // prefix. Building it from section and slug alone would put every German
+  // article at an English URL in the sitemap and in every feed.
+  return magazineUrl(articlePath(article)).href;
 }
 
 export function rssFeed(articles: readonly Article[]): string {

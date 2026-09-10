@@ -29,8 +29,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import CorrectionsPage from "@/app/corrections/page";
-import EditorialPolicyPage from "@/app/editorial-policy/page";
+import CorrectionsPage from "@/app/(en)/corrections/page";
+import EditorialPolicyPage from "@/app/(en)/editorial-policy/page";
 import { SiteFooter } from "@/components/site-footer";
 import { publisher } from "@/config/publisher";
 import { loadArticles, publishedArticles } from "@/content/load";
