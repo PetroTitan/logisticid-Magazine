@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { PolicyPage } from "@/components/policy-page";
+import { publisher } from "@/config/publisher";
 import { publicArticles } from "@/lib/corpus";
 import { pageMetadata } from "@/lib/metadata";
 import { mainSiteUrl } from "@/lib/site";
@@ -38,7 +39,8 @@ export default function CorrectionsPage() {
         would bury the ones that matter.
       </p>
       <p>
-        To report an error, use the{" "}
+        To report an error, write to{" "}
+        <a href={`mailto:${publisher.contactEmail}`}>{publisher.contactEmail}</a>, or use the{" "}
         <a href={mainSiteUrl("/contact").href}>LogisticID contact page</a>.
       </p>
 

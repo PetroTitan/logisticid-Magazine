@@ -1,6 +1,7 @@
 import { getAuthor } from "@/content/authors";
 import { getSection } from "@/content/sections";
 import type { Article } from "@/content/types";
+import { publisher as publisherIdentity } from "@/config/publisher";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
 /**
@@ -15,11 +16,24 @@ import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
 type JsonObject = Record<string, unknown>;
 
-/** The publisher of the Magazine is LogisticID itself. */
+/**
+ * The publisher of the Magazine is LogisticID itself.
+ *
+ * `legalName` is emitted alongside the brand because the main site's
+ * Organization entity carries it and the two describe the same company. The
+ * node stays a REFERENCE to that entity rather than a second declaration of
+ * it: `url` points at the main site, where the full record — company number,
+ * registered address, contact address — is published once. Repeating those
+ * here would put the same facts in two places for a machine to reconcile,
+ * which is the drift `docs/company/corporate-identity.md` exists to prevent.
+ *
+ * No `vatID`. The company is not registered for VAT.
+ */
 function publisher(): JsonObject {
   return {
     "@type": "Organization",
     name: site.parentName,
+    legalName: publisherIdentity.legalName,
     url: mainSiteUrl("/").href,
   };
 }
