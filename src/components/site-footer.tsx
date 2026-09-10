@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { sections } from "@/content/sections";
+import { publisher } from "@/config/publisher";
 import { mainSiteUrl, site } from "@/lib/site";
 
 /**
@@ -92,7 +93,20 @@ export function SiteFooter() {
           road freight works. It is general information and reporting, not advice on a particular
           shipment — see the{" "}
           <Link href="/editorial-policy">editorial policy</Link> for what that means in practice.
-          {" "}&copy; {year} {site.parentName}.
+        </p>
+
+        {/*
+          The same legal line the main site's footer carries, and for the same
+          reason: two applications serve one hostname for one company, and a
+          reader who finds the entity named in one place and only the brand in
+          the other cannot tell which page they are on the hook to.
+
+          Entity and number only. The registered office is a seat for service
+          of documents, not a place anyone visits, and a street address under a
+          masthead reads as an editorial office.
+        */}
+        <p className="site-footer__note">
+          &copy; {year} {publisher.legalName} &middot; IČO {publisher.registrationNumber}
         </p>
       </div>
     </footer>

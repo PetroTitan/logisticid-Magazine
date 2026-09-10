@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { PolicyPage } from "@/components/policy-page";
+import { publisher } from "@/config/publisher";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -58,6 +59,21 @@ export default function EditorialPolicyPage() {
         rank carriers, do not compare LogisticID favourably against named competitors, and carry no
         advertising, affiliate links or paid placement. Links to LogisticID service pages are
         labelled as such and appear after the article, not inside its argument.
+      </p>
+
+      <h2 id="imprint">The company behind the Magazine</h2>
+      <p>
+        LogisticID Magazine is published by {publisher.legalName}, company identification number
+        (IČO) {publisher.registrationNumber}, entered in the {publisher.registry} under file{" "}
+        {publisher.registryFileNumber}, with its registered office at {publisher.registeredOffice}.
+        Correspondence about the Magazine reaches the company at{" "}
+        <a href={`mailto:${publisher.contactEmail}`}>{publisher.contactEmail}</a>.
+      </p>
+      <p>
+        That address is the company&rsquo;s registered office: the address at which documents can be
+        served on it. It is not an editorial office, a warehouse, a terminal or a depot, and there
+        is nothing at it for a reader or a customer to visit. LogisticID arranges transport that
+        independent carriers perform and operates no facility.
       </p>
 
       <h2 id="never">What is never published</h2>

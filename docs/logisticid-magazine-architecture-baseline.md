@@ -87,6 +87,20 @@ From `docs/CURRENT-SCOPE.md`, `docs/PRODUCT-TRUTH.md` and `src/config/company.ts
 - Palette: blue `#0874C9`, orange `#F58220`, black `#111111`, white `#FFFFFF` — confirmed in `src/styles/globals.css` and `docs/DESIGN-SYSTEM.md`.
 - Identity: orange connected-route mark plus the LogisticID wordmark (`src/components/brand.tsx`).
 
+> **Superseded on 2026-09-10 — incorporation.** The bullet above recorded the
+> position on the audit date and is left as written, because this document is a
+> dated snapshot rather than a live statement. It is no longer true.
+> **LogisticID s.r.o. was entered in the Czech Commercial Register on
+> 3 September 2026**, IČO `29957516`, file `C 455016`, registered office
+> Petrská 1166/33, Nové Město, 110 00 Praha 1. There is still **no DIČ**: the
+> company is not registered for VAT, and `CZ29957516` must never be published
+> as one merely because a Czech DIČ is written as CZ plus the company number.
+> The current record is `docs/company/corporate-identity.md`, which this
+> repository and the main one hold byte-for-byte identically and both test
+> themselves against. The byline finding below is unaffected — no publishable
+> person is associated with LogisticID, and incorporating a company did not
+> create one.
+
 ### The finding that shaped the Magazine's byline model
 
 `src/data/team.ts` is **deliberately an empty list**. Its header states the binding rule: *"only real people who have agreed to be published may appear here. Never invent a colleague, a biography, a job title, a LinkedIn profile or a credential."*
