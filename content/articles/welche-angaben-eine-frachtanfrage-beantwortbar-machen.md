@@ -45,7 +45,7 @@
 }
 ---
 
-„Zwei Paletten, Polen nach Deutschland, was kostet das?"
+„Zwei Paletten, Polen nach Deutschland, was kostet das?“
 
 Eine Frage, die vernünftig aussieht und sich nicht beantworten lässt. Nicht, weil der Absender nachlässig gewesen wäre — die fehlenden Angaben sind nur dann erkennbar wichtig, wenn man gesehen hat, was passiert, sobald sie nicht stimmen.
 
@@ -61,7 +61,7 @@ Jeder Punkt unten gehört zu einem dieser vier. Genau deshalb kosten ungenaue An
 
 **Maße und Gewicht, gemessen.** Länge, Breite und Höhe je Packstück oder Palette, und das Gewicht je Einheit. Nicht das Gewicht der Ware, sondern das Bruttogewicht einschließlich Palette und Verpackung — das ist es, was gehoben wird und was gegen die Grenzwerte eines Fahrzeugs zählt.
 
-**Ob gestapelt werden darf.** Diese eine Angabe kann darüber entscheiden, welche Leistung überhaupt möglich ist. Eine Palette, die keine Last von oben verträgt, belegt ihre Stellfläche über die gesamte Innenhöhe des Fahrzeugs, nicht nur über ihre eigene Höhe. Eine als „zwei Paletten" beschriebene Sendung, die aus zwei nicht stapelbaren Paletten besteht, kann den Platz von vieren beanspruchen.
+**Ob gestapelt werden darf.** Diese eine Angabe kann darüber entscheiden, welche Leistung überhaupt möglich ist. Eine Palette, die keine Last von oben verträgt, belegt ihre Stellfläche über die gesamte Innenhöhe des Fahrzeugs, nicht nur über ihre eigene Höhe. Eine als „zwei Paletten“ beschriebene Sendung, die aus zwei nicht stapelbaren Paletten besteht, kann den Platz von vieren beanspruchen.
 
 **Verpackung und Ladeeinheit.** Europalette, Übermaßpalette, Kiste, Fass, lose Packstücke, auf Gestell. Davon hängen das Handlingequipment und die Frage ab, ob die Sendung eine netzfähige Standardeinheit ist.
 
@@ -87,7 +87,7 @@ Das Fahrzeug muss beide Orte physisch erreichen und dort arbeiten können, und d
 
 ## Die Termine
 
-**Wann die Ware wirklich bereitsteht.** Bereit heißt verladefähig: produziert, verpackt, etikettiert, dokumentiert und physisch verfügbar. „Bereit am Montag" im Sinne von „die Verpackung ist Montagnachmittag fertig" ist ein anderer Abholtag.
+**Wann die Ware wirklich bereitsteht.** Bereit heißt verladefähig: produziert, verpackt, etikettiert, dokumentiert und physisch verfügbar. „Bereit am Montag“ im Sinne von „die Verpackung ist Montagnachmittag fertig“ ist ein anderer Abholtag.
 
 **Wie verbindlich der Liefertermin ist.** Zwischen einem Wunsch, einem Ziel und einem Termin mit vertraglicher oder betrieblicher Folge liegt ein realer Unterschied, und er entscheidet über die passende Leistung. Ihn genau zu benennen hilft mehr, als ihn dringlich zu benennen.
 
