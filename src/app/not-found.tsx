@@ -1,12 +1,10 @@
-import Link from "next/link";
-
 import { localeDetails, locales, type Locale } from "@/config/locales";
 import { strings } from "@/config/ui-strings";
 import { sectionLabels, sections } from "@/content/sections";
 import { articlesInSection } from "@/lib/corpus";
 import { indexPath, sectionPath, staticPath } from "@/lib/localized-routes";
 import { mainSiteTarget } from "@/lib/main-site-links";
-import { mainSiteUrl } from "@/lib/site";
+import { BASE_PATH, mainSiteUrl } from "@/lib/site";
 import "@/styles/globals.css";
 
 export const metadata = {
@@ -46,6 +44,23 @@ export const metadata = {
  * There is no header or footer. Both are locale-bound, and a bilingual page
  * with navigation in one language would be less honest than no navigation.
  */
+/**
+ * A Magazine-relative path as the browser must see it.
+ *
+ * PLAIN ANCHORS, NOT `next/link`, AND THE REASON IS MEASURED. This page sits
+ * outside both root layouts, so importing `next/link` here pulls its client
+ * runtime into a chunk that cannot be shared with the layout graph — 23 kB,
+ * loaded by 32 of the 34 prerendered pages, for a component nothing on those
+ * pages uses. Client JS went from 577,141 bytes to 600,251; with anchors it is
+ * 577,127.
+ *
+ * Nothing is lost. A navigation out of a layout-less 404 into a page under a
+ * root layout is a document load whether `Link` asks for it or not.
+ */
+function magazinePath(path: string): string {
+  return path === "/" ? BASE_PATH : `${BASE_PATH}${path}`;
+}
+
 function Half({ locale }: { locale: Locale }) {
   const ui = strings(locale);
   const populated =
@@ -59,20 +74,23 @@ function Half({ locale }: { locale: Locale }) {
       <p>{ui.notFoundBody}</p>
       <ul className="linked-list">
         <li>
-          <Link href={indexPath(locale)}>{ui.notFoundHome}</Link>
+          {/* `indexPath("en")` is "/", and `/magazine/` is a redirect to
+              `/magazine`. Sending a reader who has already hit a dead end
+              through a redirect is one avoidable hop too many. */}
+            <a href={magazinePath(indexPath(locale))}>{ui.notFoundHome}</a>
         </li>
         {populated.map((section) => (
           <li key={section.slug}>
-            <Link href={sectionPath(section.slug, locale)}>
+            <a href={magazinePath(sectionPath(section.slug, locale))}>
               {sectionLabels(section, locale).name}
-            </Link>
+            </a>
           </li>
         ))}
         <li>
-          <Link href={staticPath("search", locale)}>{ui.notFoundSearch}</Link>
+          <a href={magazinePath(staticPath("search", locale))}>{ui.notFoundSearch}</a>
         </li>
         <li>
-          <Link href={staticPath("corrections", locale)}>{ui.corrections}</Link>
+          <a href={magazinePath(staticPath("corrections", locale))}>{ui.corrections}</a>
         </li>
         <li>
           <a href={mainSiteUrl(mainSiteTarget("/", locale).path).href}>{ui.notFoundMainSite}</a>

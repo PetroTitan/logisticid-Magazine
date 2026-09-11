@@ -71,7 +71,7 @@ own and contradicts none of the main site's definitions.
 | --- | --- | --- |
 | freight forwarder | Spedition / Spediteur | § 453 HGB. What LogisticID is. |
 | carrier | Transportunternehmen | The company that moves the goods. |
-| — | Frachtführer | § 407 HGB. **Does not appear anywhere in the German corpus.** Nothing in these five articles needs the role, and using it loosely is the one German word that changes what LogisticID is claiming to be. |
+| carrier (the legal role) | Frachtführer | § 407 HGB. Appears **once**, in `welche-angaben-…`: "Die Haftung des Frachtführers im grenzüberschreitenden Straßengüterverkehr ist … begrenzt" — the CMR liability of the party performing carriage. That is what the word is for. LogisticID is never its subject, and `tests/content/german-edition.test.ts` fails if it becomes one. Everywhere else the actor is a `Transportunternehmen`. |
 | shipper | Versender | |
 | full truckload / FTL | Komplettladung (FTL) | |
 | part load / LTL | Teilladung (LTL) | Not `Stückgut`, which is the hub-routed product. |
@@ -141,6 +141,13 @@ Magazine behind the main site's rewrite, and reading what came back.
 8. **`min read`, `References`, `Accessed`, the source-type labels and every
    section name** were English on German pages, all from strings written inline
    in a component instead of in the dictionary.
+9. **`next/link` in the layout-less 404 cost 23 kB on 32 pages.** The bilingual
+   404 sits outside both root layouts, so importing `next/link` there pulls its
+   client runtime into a chunk that cannot be shared with the layout graph.
+   Client JS went 577,141 → 600,251 bytes. Plain anchors with the base path
+   applied explicitly bring it to 577,127 — fourteen bytes below where the
+   phase started — and lose nothing: a navigation out of a layout-less 404 into
+   a page under a root layout is a document load either way.
 
 ## The bilingual 404
 
@@ -169,6 +176,19 @@ language they read.
 unchanged at 1 — the added `locale` field is additive, and the `href` fix is a
 correction: it used to compose an English path for a German article.
 
+## A measurement trap worth writing down
+
+`pnpm validate:routing` performs **its own** `next build`, deliberately, so
+that the probe cannot pass against a stale one. That build does not run
+`prepare-standalone`, so it leaves `.next/standalone` without its static
+assets. Running it before browser QA gives a server that returns 200 for every
+page and 500 for the stylesheet — and every page then reports a horizontal
+overflow, because without CSS an intrinsically-1600px image is 1600px wide.
+
+Two runs of the responsive suite were thrown away to that. **Assert the
+stylesheet actually loads before believing any browser measurement**, and run
+`pnpm build` last before starting the standalone server.
+
 ## Verification
 
 Through the main site's rewrite, against a production build of both
@@ -191,8 +211,22 @@ applications:
 - 0 horizontal overflow at 390, 768, 1024 and 1440 on 19 pages; 0 accessibility
   findings on the same set;
 - English pages: 18 before, 18 after, none added or removed. 14 gained exactly
-  the language switcher and its `hreflang` cluster; the 404 was replaced
-  deliberately; `/search` is byte-identical.
+  the language switcher and its `hreflang` cluster, plus the social-image
+  correction; the 404 was replaced deliberately; `/search` changed only its
+  Twitter card declaration.
+
+Build, before → after:
+
+| | 4S-A (`dfb32b6`) | 4T |
+| --- | --- | --- |
+| prerendered pages | 27 | 45 |
+| sitemap URLs | 18 (3 German) | 30 (15 German) |
+| articles | 5 EN + 1 DE | 5 EN + 5 DE |
+| build time | 4.6 s | 5.4 s |
+| peak RSS | 1,376,731,136 B | 1,373,716,480 B |
+| `.next` | 103 MB | 112 MB |
+| client JS | 577,141 B in 12 files | **577,127 B in 12 files** |
+| new dependencies | — | none |
 
 ## Carried forward
 

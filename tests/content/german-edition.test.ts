@@ -460,3 +460,63 @@ describe("the language control", () => {
     expect(html).toContain(`href="/magazine${staticPath("corrections", "de")}"`);
   });
 });
+
+describe("truth in the German corpus", () => {
+  const germanText = german.map((article) => ({
+    id: article.id,
+    text: [article.title, article.subtitle, article.description, article.summary, blocksToText(article.body)].join(" "),
+  }));
+
+  it("examined every German article", () => {
+    expect(germanText.length).toBe(german.length);
+    expect(germanText.length).toBeGreaterThan(0);
+  });
+
+  it("never makes LogisticID the Frachtführer", () => {
+    /*
+     * NOT A BANNED WORD. `Frachtführer` is the § 407 HGB party that performs
+     * carriage, it is the correct word for the CMR liability an article has to
+     * explain, and it is used once for exactly that. The question a test can
+     * usefully ask is not whether the string occurs but whether LogisticID is
+     * ever its subject — which is the difference between describing the law
+     * and claiming a role the company does not hold.
+     */
+    for (const { id, text } of germanText) {
+      for (const sentence of text.split(/(?<=[.!?])\s+/)) {
+        if (!/LogisticID/.test(sentence)) continue;
+        expect(
+          /(ist|als|wird|agiert als|tritt als)[^.]{0,40}Frachtf(ü|ue)hrer/.test(sentence),
+          `${id}: ${sentence}`,
+        ).toBe(false);
+        expect(
+          /LogisticID[^.]{0,60}\b(bef(ö|oe)rdert|transportiert|f(ä|ae)hrt|stellt zu|verl(ä|ae)dt)\b/.test(sentence),
+          `${id}: ${sentence}`,
+        ).toBe(false);
+      }
+    }
+  });
+
+  it("makes no availability, ownership or entity claim the main site does not", () => {
+    const forbidden = [
+      /GmbH/, /\bAG\b/, /USt-IdNr/, /Umsatzsteuer/, /\bMwSt\b/,
+      /unsere Flotte/i, /eigene Flotte/i, /unsere Lkw/i, /unsere Fahrzeuge/i,
+      /unsere Terminals?/i, /unsere Lager/i, /unsere Anlagen/i,
+      /garantiert/i, /rund um die Uhr/i, /24\/7/, /weltweit/i, /europaweit/i,
+    ];
+    for (const { id, text } of germanText) {
+      for (const pattern of forbidden) {
+        const hit = new RegExp(`.{0,80}${pattern.source}.{0,80}`, pattern.flags + "g").exec(text);
+        expect(hit === null, `${id}: ${hit?.[0]}`).toBe(true);
+      }
+    }
+  });
+
+  it("keeps the contact address the one the company declares", () => {
+    for (const { id, text } of germanText) {
+      const addresses = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/g) ?? [];
+      for (const address of addresses) {
+        expect(address, id).toBe("contact@logisticid.com");
+      }
+    }
+  });
+});
