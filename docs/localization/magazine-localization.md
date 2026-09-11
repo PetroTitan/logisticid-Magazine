@@ -129,3 +129,38 @@ it does not acquire a second legal identity by being described in German.
 
 The German section index and the German header entry appear on their own, from
 the article's existence. Nothing else needs editing.
+
+## The German edition (Phase 4T)
+
+The corpus reached full parity in Phase 4T: every localizable English article
+has a German counterpart, and the standards pages, the author pages, search and
+the feeds all exist in both languages.
+
+```
+/magazine/de/redaktionsrichtlinien      editorial policy
+/magazine/de/quellenrichtlinien         sourcing policy
+/magazine/de/bild-und-ki-richtlinien    image and AI policy
+/magazine/de/korrekturen                corrections
+/magazine/de/autoren[/{slug}]           authors
+/magazine/de/suche                      search (noindex)
+/magazine/de/rss.xml  ·  /de/atom.xml  ·  /de/feed.json
+/magazine/de/latest.json  ·  /de/search-index.json
+```
+
+Static routes are keyed by a language-neutral identity in
+`magazineStaticRoutes` (`src/lib/localized-routes.ts`), exactly as the main
+site's manifest is keyed, because the German path of the sourcing policy is not
+derivable from the English one.
+
+**One feed per language**, not one feed with a language per item: a feed is a
+subscription, and a reader who subscribed to the German feed said which
+language they read.
+
+**The 404 is bilingual.** `src/app/not-found.tsx` is the only not-found file
+that Next.js actually renders when an application has two root layouts in route
+groups — a `not-found.tsx` inside a group contributes its metadata and nothing
+else. It sits outside both layouts, cannot know the reader's language, and
+answers in both rather than guessing.
+
+The editorial record, the article ledger and the standing caveats are in
+`docs/localization/de/magazine-editorial-review.md`.
