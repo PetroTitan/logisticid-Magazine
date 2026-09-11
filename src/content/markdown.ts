@@ -54,6 +54,15 @@ function fail(line: number, message: string): never {
  * Deterministic, so an in-page anchor that is linked from elsewhere does not
  * change when the build runs again.
  */
+/** Cyrillic → ASCII for fragment ids. The main site's slug table, verbatim. */
+const CYRILLIC_TO_ASCII: Readonly<Record<string, string>> = {
+  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh",
+  з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o",
+  п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "kh", ц: "ts",
+  ч: "ch", ш: "sh", щ: "shch", ъ: "", ы: "y", ь: "", э: "e",
+  ю: "yu", я: "ya",
+};
+
 export function headingId(text: string): string {
   const id = text
     .toLowerCase()
@@ -75,6 +84,19 @@ export function headingId(text: string): string {
     .replace(/ö/g, "oe")
     .replace(/ü/g, "ue")
     .replace(/ß/g, "ss")
+    /*
+     * Cyrillic, for the same reason and by the same table the main site uses
+     * for Russian slugs.
+     *
+     * WITHOUT THIS EVERY RUSSIAN HEADING GETS THE SAME ID. The rule below maps
+     * anything outside `[a-z0-9]` to a hyphen, so a wholly Cyrillic heading
+     * reduces to nothing and falls through to the `"section"` fallback — which
+     * means every heading on every Russian article shares one id, every
+     * in-page anchor lands on the first, and the document is invalid HTML.
+     * Nothing would have said so; the duplicate-id check at the end of
+     * `parseMarkdown` is what caught it, on the first Russian article.
+     */
+    .replace(/[а-яё]/g, (character) => CYRILLIC_TO_ASCII[character] ?? "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return id === "" ? "section" : id;

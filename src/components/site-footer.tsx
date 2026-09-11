@@ -121,22 +121,47 @@ export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {})
           </div>
         </div>
 
-        {localized ? (
-          <p className="site-footer__note">
-            {site.name} {ui.publishedBy} {site.parentName}. Die Beiträge erklären, wie
-            europäischer Straßengüterverkehr funktioniert. Sie sind allgemeine
-            Information und Berichterstattung, keine Beratung zu einer konkreten
-            Sendung — was das in der Praxis bedeutet, steht in den{" "}
-            <Link href={staticPath("editorial-policy", "de")}>{ui.editorialPolicy}</Link>.
-          </p>
-        ) : (
-          <p className="site-footer__note">
-            {site.name} is published by {site.parentName}. It is written to explain how European
-            road freight works. It is general information and reporting, not advice on a particular
-            shipment — see the{" "}
-            <Link href="/editorial-policy">editorial policy</Link> for what that means in practice.
-          </p>
-        )}
+        {/*
+          THE STANDING NOTE, IN THE READER'S LANGUAGE AND LINKING TO THE
+          READER'S PAGE.
+          
+          This was `localized ? <German> : <English>`, which is correct with
+          two languages and put a GERMAN paragraph — linking to
+          `/magazine/de/redaktionsrichtlinien` — at the foot of every Russian
+          page. Nothing failed: the German branch is selected for any locale
+          that is not the default, and the page renders. The crawl found it
+          because it follows links rather than reading the source.
+          
+          The link is resolved through the route table for `locale`, so the
+          sentence and its destination cannot be in different languages.
+        */}
+        <p className="site-footer__note">
+          {locale === "de" ? (
+            <>
+              {site.name} {ui.publishedBy} {site.parentName}. Die Beiträge erklären, wie
+              europäischer Straßengüterverkehr funktioniert. Sie sind allgemeine
+              Information und Berichterstattung, keine Beratung zu einer konkreten
+              Sendung — was das in der Praxis bedeutet, steht in den{" "}
+              <Link href={staticPath("editorial-policy", locale)}>{ui.editorialPolicy}</Link>.
+            </>
+          ) : locale === "ru" ? (
+            <>
+              {site.name} {ui.publishedBy} {site.parentName}. Материалы объясняют,
+              как работают европейские автомобильные грузоперевозки. Это общая
+              информация и разборы, а не консультация по конкретной отправке —
+              что это значит на практике, изложено в разделе{" "}
+              <Link href={staticPath("editorial-policy", locale)}>{ui.editorialPolicy}</Link>.
+            </>
+          ) : (
+            <>
+              {site.name} is published by {site.parentName}. It is written to explain how European
+              road freight works. It is general information and reporting, not advice on a
+              particular shipment — see the{" "}
+              <Link href={staticPath("editorial-policy", locale)}>editorial policy</Link> for what
+              that means in practice.
+            </>
+          )}
+        </p>
 
         {/*
           The same legal line the main site's footer carries, and for the same

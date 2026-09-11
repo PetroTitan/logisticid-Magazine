@@ -39,6 +39,13 @@ export const sections: readonly Section[] = [
         intro:
           "Erklärungen zur Mechanik des Straßengüterverkehrs — was die Ladungsarten voneinander unterscheidet, welches Equipment und welche Handhabung eine Sendung braucht und was feststehen muss, bevor ein Fahrzeug gebucht wird.",
       },
+      ru: {
+        name: "Автомобильные перевозки",
+        description:
+          "Как на самом деле работают европейские автомобильные грузоперевозки: типы загрузки, транспорт, планирование и документы.",
+        intro:
+          "Разборы механики автомобильных перевозок — что отличает типы загрузки друг от друга, какой транспорт и какая обработка нужны отправке и что должно быть решено до того, как машина забронирована.",
+      },
     },
   },
   {
@@ -58,6 +65,13 @@ export const sections: readonly Section[] = [
         intro:
           "Hinweise für die Seite des Versenders: welche Angaben eine Spedition braucht, wie sich Ware so beschreiben lässt, dass die Beschreibung an der Rampe standhält, und woran die Planung am häufigsten scheitert.",
       },
+      ru: {
+        name: "Практика отправок",
+        description:
+          "Практические указания для грузоотправителей: подготовить груз, запросить стоимость и работать с транспортными компаниями.",
+        intro:
+          "Указания для стороны грузоотправителя: какие сведения нужны экспедитору, как описать груз так, чтобы описание выдержало встречу с рампой, и на чём чаще всего срывается планирование.",
+      },
     },
   },
   {
@@ -76,6 +90,13 @@ export const sections: readonly Section[] = [
           "Wie LogisticID Magazine arbeitet, was es veröffentlicht und woher es sein Material bezieht.",
         intro:
           "Die Rechenschaft der Redaktion über sich selbst: wozu diese Publikation da ist, wie Aussagen belegt und geprüft werden und was hier nicht erscheint.",
+      },
+      ru: {
+        name: "О журнале",
+        description:
+          "Как работает LogisticID Magazine, что он публикует и откуда берёт материал.",
+        intro:
+          "Отчёт редакции о себе: зачем существует эта публикация, как утверждения подкрепляются и проверяются и что здесь не появляется.",
       },
     },
   },

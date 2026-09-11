@@ -164,3 +164,44 @@ answers in both rather than guessing.
 
 The editorial record, the article ledger and the standing caveats are in
 `docs/localization/de/magazine-editorial-review.md`.
+
+## The Russian edition (Phase 4U)
+
+Full three-way parity. Every localizable English article has a Russian
+counterpart, and the standards pages, the author pages, search and the feeds
+all exist in three languages.
+
+```
+/magazine/ru/redaktsionnye-printsipy   editorial policy
+/magazine/ru/rabota-s-istochnikami     sourcing policy
+/magazine/ru/izobrazheniya-i-ii        image and AI policy
+/magazine/ru/ispravleniya              corrections
+/magazine/ru/avtory[/{slug}]           authors
+/magazine/ru/poisk                     search (noindex)
+/magazine/ru/rss.xml · /ru/atom.xml · /ru/feed.json
+/magazine/ru/latest.json · /ru/search-index.json
+```
+
+Russian article slugs are **ASCII, transliterated from the Russian title** by
+the same table the main site uses, for the same reason: a link that stops being
+readable the moment it leaves the browser is a link pasted into an e-mail, a
+spreadsheet and a rate sheet every day.
+
+**Heading fragment ids needed the same table.** `headingId` maps anything
+outside `[a-z0-9]` to a hyphen, so a wholly Cyrillic heading reduced to nothing
+and fell through to the `"section"` fallback — one id shared by every heading on
+every Russian article. The duplicate-id check added in Phase 4T caught it on
+the first Russian article written.
+
+**The index cluster is derived, not stated.** Each index page used to carry its
+own two-entry `languages` map, and adding a third language left the English and
+German indexes advertising each other while the Russian one advertised all
+three. `indexAlternates()` and `indexCluster()` are read by all three now.
+
+**Section indexes advertise only the languages that have one.**
+`sectionAlternates()` takes the locales that actually publish an index for that
+section, derived by the same rule each translated section route applies in
+`generateStaticParams`.
+
+The editorial record for the Russian edition is in
+`docs/localization/ru/magazine-editorial-review.md`.

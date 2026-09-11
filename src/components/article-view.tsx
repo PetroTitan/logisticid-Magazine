@@ -47,6 +47,52 @@ function formatDate(iso: string, locale: Locale): string {
   }).format(new Date(`${iso}T00:00:00Z`));
 }
 
+/**
+ * The four road services and the two audiences, named per language.
+ *
+ * RECORDS, NOT A TERNARY. `locale === "de" ? german : english` is correct for
+ * two languages and silently wrong for three — a Russian article's related
+ * list would have printed English labels beside Russian prose, with nothing to
+ * say so. Keyed by locale means a new language is a compile error until it is
+ * named.
+ */
+const SERVICE_NAMES: Readonly<
+  Record<Locale, Readonly<Record<"ftl" | "ltl" | "express" | "pallets", string>>>
+> = {
+  en: {
+    ftl: "Full truckload (FTL)",
+    ltl: "Part load (LTL)",
+    express: "Express freight",
+    pallets: "Pallet freight",
+  },
+  de: {
+    ftl: "Komplettladung (FTL)",
+    ltl: "Teilladung (LTL)",
+    express: "Expressfracht",
+    pallets: "Palettenversand",
+  },
+  ru: {
+    ftl: "Полная загрузка (FTL)",
+    ltl: "Частичная загрузка (LTL)",
+    express: "Экспресс-перевозки",
+    pallets: "Паллетные перевозки",
+  },
+};
+
+const AUDIENCE_NAMES: Readonly<
+  Record<Locale, Readonly<Record<"shippers" | "carriers", string>>>
+> = {
+  en: { shippers: "LogisticID for shippers", carriers: "LogisticID for carriers" },
+  de: {
+    shippers: "LogisticID für Versender",
+    carriers: "LogisticID für Transportunternehmen",
+  },
+  ru: {
+    shippers: "LogisticID для грузоотправителей",
+    carriers: "LogisticID для перевозчиков",
+  },
+};
+
 /** Label and destination for a link back to the main LogisticID site. */
 function relatedTarget(
   entity: RelatedLogisticIDEntity,
@@ -54,20 +100,7 @@ function relatedTarget(
 ): { label: string; href: string; foreignLanguage: boolean } {
   switch (entity.type) {
     case "service": {
-      const names =
-        locale === "de"
-          ? ({
-              ftl: "Komplettladung (FTL)",
-              ltl: "Teilladung (LTL)",
-              express: "Expressfracht",
-              pallets: "Palettenversand",
-            } as const)
-          : ({
-              ftl: "Full truckload (FTL)",
-              ltl: "Part load (LTL)",
-              express: "Express freight",
-              pallets: "Pallet freight",
-            } as const);
+      const names = SERVICE_NAMES[locale];
       const target = mainSiteTarget(`/road-freight/${entity.slug}`, locale);
       return {
         label: names[entity.slug],
@@ -78,14 +111,7 @@ function relatedTarget(
     case "audience":
       const target = mainSiteTarget(`/${entity.slug}`, locale);
       return {
-        label:
-          locale === "de"
-            ? entity.slug === "shippers"
-              ? "LogisticID für Versender"
-              : "LogisticID für Transportunternehmen"
-            : entity.slug === "shippers"
-              ? "LogisticID for shippers"
-              : "LogisticID for carriers",
+        label: AUDIENCE_NAMES[locale][entity.slug],
         href: mainSiteUrl(target.path).href,
         foreignLanguage: target.foreignLanguage,
       };
@@ -121,6 +147,13 @@ function relatedTarget(
           "/road-freight": "Europäischer Straßengüterverkehr",
           "/freight-forwarding": "Spedition",
           "/services": "Frachtleistungen",
+        },
+        ru: {
+          "/": "LogisticID",
+          "/request-a-quote": "Запросить стоимость перевозки",
+          "/road-freight": "Автомобильные грузоперевозки по Европе",
+          "/freight-forwarding": "Экспедирование",
+          "/services": "Услуги",
         },
       };
       const label = names[locale][entity.path] ?? names.en[entity.path];

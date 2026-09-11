@@ -25,7 +25,7 @@ same mechanism `docs/company/corporate-identity.md` uses for the company.
 ## Canonical values
 
 ```
-locales = en,de
+locales = en,de,ru
 default_locale = en
 en_hreflang = en
 en_path_prefix =
@@ -34,6 +34,10 @@ de_hreflang = de
 de_path_prefix = /de
 de_native_label = Deutsch
 de_formatting_locale = de-DE
+ru_hreflang = ru
+ru_path_prefix = /ru
+ru_native_label = Русский
+ru_formatting_locale = ru-RU
 ```
 
 ## Decisions behind these values
@@ -48,6 +52,18 @@ region the content does not target is a worse error than claiming none.
 `de_formatting_locale` is `de-DE` because number and date formatting has to
 pick a convention and that is the majority one. It is a presentation choice and
 it is deliberately not the same value as the `hreflang`.
+
+For Russian the same rule is load-bearing rather than tidy. `ru-RU` would tell
+a search engine this content targets Russia. It does not: LogisticID arranges
+European road freight and serves no Russian market, and the Russian pages exist
+for Russian-speaking carriers, dispatchers and shippers wherever they work —
+the Baltics, Central Asia, Poland, Germany. `hreflang="ru"` says "in Russian",
+which is the only thing the language layer is entitled to say.
+
+`ru_formatting_locale` is `ru-RU` for the same presentational reason `de-DE`
+is, and `openGraphLocale` is `ru_RU` because Open Graph's grammar is
+`language_TERRITORY` and offers no territory-neutral form. Neither is read by
+anything that decides availability.
 
 ### English has an empty prefix
 
@@ -66,11 +82,22 @@ would mean a second rewrite rule and a change to a routing contract that works.
 
 ### A locale code is a reserved segment in both applications
 
-`/de` belongs to German. The main site may not publish an English route
-beginning `/de/`, and the Magazine may not register a section slugged `de` —
-either would occupy the same URL as the whole German tree, and the router would
-resolve it by precedence rather than by anybody's decision. Both repositories
-assert this.
+`/de` belongs to German and `/ru` to Russian. The main site may not publish an
+English route beginning with either, and the Magazine may not register a
+section slugged `de` or `ru` — either would occupy the same URL as a whole
+language tree, and the router would resolve it by precedence rather than by
+anybody's decision. Both repositories assert this.
+
+### The language layer is not a market
+
+This is a content rule, and it is recorded here because it is the rule most
+easily lost when a locale is added by somebody reading only the code. A locale
+prefix says which language a document is written in. It says nothing about
+where the company arranges freight, and the service, market and corridor truth
+on a page in any language is the same registry truth every other language
+reads. `/ru/` does not make Russia, Belarus, the CIS or the EAEU a served
+geography, and no page may acquire a market, a service, a guarantee or a
+capability by being translated.
 
 ## Adding a locale
 

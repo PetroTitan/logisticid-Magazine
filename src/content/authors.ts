@@ -70,6 +70,11 @@ export const authors: readonly MagazineAuthor[] = [
         role: "Redaktion",
         bio: "LogisticID Magazine wird vom LogisticID-Team geschrieben und redigiert. Die Beiträge sind der Redaktion zugeschrieben und nicht einer namentlich genannten Person, weil LogisticID bislang keine Profile einzelner Mitarbeiterinnen und Mitarbeiter veröffentlicht. Jede sachliche Aussage ist in den Quellen belegt, die beim Beitrag stehen.",
       },
+      ru: {
+        name: "Редакция LogisticID Magazine",
+        role: "Редакция",
+        bio: "LogisticID Magazine пишет и редактирует команда LogisticID. Материалы подписаны редакцией, а не конкретным человеком, потому что LogisticID пока не публикует профили отдельных сотрудников. Каждое фактическое утверждение подкреплено источниками, указанными при материале.",
+      },
     },
   },
 ];

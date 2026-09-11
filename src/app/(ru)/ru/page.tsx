@@ -11,12 +11,12 @@ import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
-const ui = strings("de");
+const ui = strings("ru");
 
 export const metadata = pageMetadata({
-  path: indexPath("de"),
-  locale: "de",
-  title: `${site.name} — Deutsch`,
+  path: indexPath("ru"),
+  locale: "ru",
+  title: `${site.name} — на русском`,
   description: ui.standfirst,
   /*
    * The German index and the English index are the same page in two languages,
@@ -28,29 +28,29 @@ export const metadata = pageMetadata({
 });
 
 /**
- * The German Magazine index.
+ * The Russian Magazine index.
  *
- * It lists German articles only. An index that mixed languages would present
- * an English piece as German editorial output, and a reader following it would
- * change language without being told.
+ * It lists Russian articles only. An index that mixed languages would present
+ * an English or German piece as Russian editorial output, and a reader
+ * following it would change language without being told.
  *
- * Sections are listed only where they have something in German, for the same
- * reason the German header is short: a section link that lands on an English
+ * Sections are listed only where they have something in Russian, for the same
+ * reason the Russian header is short: a section link that lands on an English
  * index is a language change disguised as navigation.
  */
-export default function GermanHomePage() {
-  const articles = publicArticles("de");
+export default function RussianHomePage() {
+  const articles = publicArticles("ru");
   const [lead, ...rest] = articles;
   const populated = sections.filter(
-    (section) => articlesInSection(section.slug, "de").length > 0,
+    (section) => articlesInSection(section.slug, "ru").length > 0,
   );
 
   return (
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", "de").path).href },
-          { name: site.name, url: magazineUrl(indexPath("de")).href },
+          { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", "ru").path).href },
+          { name: site.name, url: magazineUrl(indexPath("ru")).href },
         ])}
       />
 
@@ -59,7 +59,7 @@ export default function GermanHomePage() {
         <h1 className="page__title">{ui.homeTitle}</h1>
         <p className="page__standfirst">{ui.standfirst}</p>
 
-        <LanguageSwitcher cluster={indexCluster()} locale="de" />
+        <LanguageSwitcher cluster={indexCluster()} locale="ru" />
 
         {lead === undefined ? (
           <p className="empty-state">{ui.emptyState}</p>
@@ -82,9 +82,11 @@ export default function GermanHomePage() {
               {populated.map((section) => (
                 <li className="section-card" key={section.slug}>
                   <h3>
-                    <Link href={sectionPath(section.slug, "de")}>{sectionLabels(section, "de").name}</Link>
+                    <Link href={sectionPath(section.slug, "ru")}>
+                      {sectionLabels(section, "ru").name}
+                    </Link>
                   </h3>
-                  <p>{sectionLabels(section, "de").description}</p>
+                  <p>{sectionLabels(section, "ru").description}</p>
                 </li>
               ))}
             </ul>

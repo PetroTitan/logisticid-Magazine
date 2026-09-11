@@ -61,6 +61,24 @@ const MUST_SERVE = [
   ["/magazine/de/feed.json", "application/feed+json"],
   ["/magazine/de/latest.json", "application/json"],
   ["/magazine/de/search-index.json", "application/json"],
+
+  /* The Russian edition. Same surfaces, same reason. */
+  ["/magazine/ru", "text/html"],
+  ["/magazine/ru/road-freight", "text/html"],
+  ["/magazine/ru/shipping-guides", "text/html"],
+  ["/magazine/ru/logisticid", "text/html"],
+  ["/magazine/ru/avtory", "text/html"],
+  ["/magazine/ru/avtory/logisticid-editorial-team", "text/html"],
+  ["/magazine/ru/poisk", "text/html"],
+  ["/magazine/ru/redaktsionnye-printsipy", "text/html"],
+  ["/magazine/ru/rabota-s-istochnikami", "text/html"],
+  ["/magazine/ru/izobrazheniya-i-ii", "text/html"],
+  ["/magazine/ru/ispravleniya", "text/html"],
+  ["/magazine/ru/rss.xml", "application/rss+xml"],
+  ["/magazine/ru/atom.xml", "application/atom+xml"],
+  ["/magazine/ru/feed.json", "application/feed+json"],
+  ["/magazine/ru/latest.json", "application/json"],
+  ["/magazine/ru/search-index.json", "application/json"],
 ];
 
 /**
@@ -100,9 +118,31 @@ const MUST_404 = [
   "/magazine/road-freight/ftl-ltl-express-palettenversand-unterschiede",
   "/magazine/redaktionsrichtlinien",
 
-  /* `/de/magazine/*` is forbidden by the routing contract and owned by nobody. */
+  /* A Russian URL that does not exist answers 404, not the Russian index. */
+  "/magazine/ru/not-real",
+  "/magazine/ru/road-freight/net-takogo-materiala",
+  "/magazine/ru/avtory/nikto",
+
+  /*
+   * NO FALLBACK IN ANY DIRECTION. An English or German slug under `/ru/`, and
+   * a Russian slug under either of the others, must all be real 404s: serving
+   * one with a 200 would publish the corpus three times under three languages
+   * and ask a search engine to choose.
+   */
+  "/magazine/ru/road-freight/ftl-ltl-express-and-pallet-freight-explained",
+  "/magazine/ru/logisticid/willkommen-bei-logisticid-magazine",
+  "/magazine/ru/editorial-policy",
+  "/magazine/ru/authors",
+  "/magazine/road-freight/ftl-ltl-ekspress-i-pallety-v-chem-raznitsa",
+  "/magazine/de/road-freight/ftl-ltl-ekspress-i-pallety-v-chem-raznitsa",
+  "/magazine/redaktsionnye-printsipy",
+
+  /* `/de/magazine/*` and `/ru/magazine/*` are forbidden by the routing
+     contract and owned by nobody. */
   "/de/magazine",
   "/de/magazine/road-freight",
+  "/ru/magazine",
+  "/ru/magazine/road-freight",
 ];
 
 const failures = [];

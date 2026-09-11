@@ -19,7 +19,7 @@
  * generated behind the main site's rewrite.
  */
 
-export const locales = ["en", "de"] as const;
+export const locales = ["en", "de", "ru"] as const;
 export type Locale = (typeof locales)[number];
 
 /** The locale served from the root of the Magazine's base path. */
@@ -54,6 +54,22 @@ export const localeDetails: Readonly<Record<Locale, LocaleDetail>> = {
     nativeLabel: "Deutsch",
     pathPrefix: "/de",
     formattingLocale: "de-DE",
+  },
+  ru: {
+    code: "ru",
+    /*
+     * `ru`, NOT `ru-RU`. The main repository's note applies here word for
+     * word: a language-region pair would tell a search engine this content
+     * targets Russia, and it does not — the publication explains European road
+     * freight, and its Russian readers are dispatchers, hauliers and shippers
+     * wherever they work. `hreflang="ru"` says "in Russian", which is the only
+     * thing the language layer is entitled to say.
+     */
+    hreflang: "ru",
+    label: "Russian",
+    nativeLabel: "Русский",
+    pathPrefix: "/ru",
+    formattingLocale: "ru-RU",
   },
 };
 
