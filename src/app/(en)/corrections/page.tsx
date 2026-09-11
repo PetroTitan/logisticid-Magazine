@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PolicyPage } from "@/components/policy-page";
 import { publisher } from "@/config/publisher";
 import { publicArticles } from "@/lib/corpus";
+import { articlePath, staticAlternates } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 import { mainSiteUrl } from "@/lib/site";
 
@@ -11,6 +12,7 @@ export const metadata = pageMetadata({
   title: "Corrections",
   description:
     "How LogisticID Magazine corrects mistakes, and the record of corrections and substantive updates it has made.",
+  languages: staticAlternates("corrections"),
 });
 
 export default function CorrectionsPage() {
@@ -22,7 +24,7 @@ export default function CorrectionsPage() {
 
   return (
     <PolicyPage
-      path="/corrections"
+      route="corrections"
       standfirst="Mistakes are corrected in the open, on the article itself and in the list below."
       title="Corrections"
     >
@@ -54,7 +56,7 @@ export default function CorrectionsPage() {
         <ul>
           {corrected.map((article) => (
             <li key={article.id}>
-              <Link href={`/${article.section}/${article.slug}`}>{article.title}</Link> —{" "}
+              <Link href={articlePath(article)}>{article.title}</Link> —{" "}
               {article.correctionNote}
             </li>
           ))}
@@ -68,7 +70,7 @@ export default function CorrectionsPage() {
         <ul>
           {updated.map((article) => (
             <li key={article.id}>
-              <Link href={`/${article.section}/${article.slug}`}>{article.title}</Link>
+              <Link href={articlePath(article)}>{article.title}</Link>
               <ul>
                 {article.updateHistory.map((update) => (
                   <li key={update.date}>

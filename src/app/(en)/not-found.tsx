@@ -1,7 +1,11 @@
 import Link from "next/link";
 
-import { sections } from "@/content/sections";
+import { strings } from "@/config/ui-strings";
+import { sectionLabels, sections } from "@/content/sections";
+import { indexPath, sectionPath, staticPath } from "@/lib/localized-routes";
 import { mainSiteUrl } from "@/lib/site";
+
+const ui = strings("en");
 
 /**
  * The Magazine's own 404.
@@ -15,29 +19,30 @@ export default function NotFound() {
   return (
     <div className="shell page">
       <p className="page__eyebrow">404</p>
-      <h1 className="page__title">This page does not exist</h1>
+      <h1 className="page__title">{ui.notFoundTitle}</h1>
       <p className="page__standfirst">
-        The address may be mistyped, or the article may never have been published. Nothing has been
-        removed to hide it — corrections and withdrawals are recorded on the{" "}
-        <Link href="/corrections">corrections page</Link>.
+        {ui.notFoundStandfirst}{" "}
+        <Link href={staticPath("corrections", "en")}>{ui.notFoundCorrectionsLinkText}</Link>.
       </p>
 
       <section aria-labelledby="notfound-sections" className="article__aside">
-        <h2 id="notfound-sections">Try one of these</h2>
+        <h2 id="notfound-sections">{ui.notFoundTryThese}</h2>
         <ul className="linked-list">
           <li>
-            <Link href="/">LogisticID Magazine home</Link>
+            <Link href={indexPath("en")}>{ui.notFoundHome}</Link>
           </li>
           {sections.map((section) => (
             <li key={section.slug}>
-              <Link href={`/${section.slug}`}>{section.name}</Link>
+              <Link href={sectionPath(section.slug, "en")}>
+                {sectionLabels(section, "en").name}
+              </Link>
             </li>
           ))}
           <li>
-            <Link href="/search">Search the Magazine</Link>
+            <Link href={staticPath("search", "en")}>{ui.notFoundSearch}</Link>
           </li>
           <li>
-            <a href={mainSiteUrl("/").href}>The main LogisticID website</a>
+            <a href={mainSiteUrl("/").href}>{ui.notFoundMainSite}</a>
           </li>
         </ul>
       </section>

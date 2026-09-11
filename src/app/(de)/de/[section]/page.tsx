@@ -5,13 +5,13 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { strings } from "@/config/ui-strings";
-import { getSection, sections } from "@/content/sections";
+import { getSection, sectionLabels, sections } from "@/content/sections";
 import { articlesInSection } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { indexPath, sectionPath } from "@/lib/localized-routes";
 import { mainSiteTarget } from "@/lib/main-site-links";
 import { pageMetadata } from "@/lib/metadata";
-import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
+import { magazineUrl, mainSiteUrl } from "@/lib/site";
 
 type Params = { params: Promise<{ section: string }> };
 
@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: Params) {
   return pageMetadata({
     path: sectionPath(section.slug, "de"),
     locale: "de",
-    title: section.name,
-    description: section.description,
+    title: sectionLabels(section, "de").name,
+    description: sectionLabels(section, "de").description,
     // Paired with the English section index, which always exists.
     languages: {
       en: magazineUrl(sectionPath(section.slug, "en")).href,
@@ -65,8 +65,16 @@ export default async function GermanSectionPage({ params }: Params) {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", locale).path).href },
-          { name: site.name, url: magazineUrl(indexPath("de")).href },
-          { name: section.name, url: magazineUrl(sectionPath(section.slug, "de")).href },
+          /*
+           * The SAME string the visible breadcrumb shows. Structured data that
+           * names a step differently from the trail on the page describes a
+           * hierarchy the reader cannot see, and the guidance for
+           * `BreadcrumbList` is explicit that the name should be the visible
+           * one. It was `site.name` — "LogisticID Magazine" — under a visible
+           * crumb reading "Magazine", and under a German one reading "Magazin".
+           */
+          { name: ui.magazineCrumb, url: magazineUrl(indexPath("de")).href },
+          { name: sectionLabels(section, "de").name, url: magazineUrl(sectionPath(section.slug, "de")).href },
         ])}
       />
 
@@ -78,13 +86,13 @@ export default async function GermanSectionPage({ params }: Params) {
             // German page whose breadcrumb root is the English home describes a
             // hierarchy that changes language halfway up.
             { label: "LogisticID", href: mainSiteUrl(mainSiteTarget("/", locale).path).href },
-            { label: "Magazine", href: indexPath("de") },
-            { label: section.name },
+            { label: ui.magazineCrumb, href: indexPath("de") },
+            { label: sectionLabels(section, "de").name },
           ]}
         />
-        <p className="page__eyebrow">Rubrik</p>
-        <h1 className="page__title">{section.name}</h1>
-        <p className="page__standfirst">{section.intro}</p>
+        <p className="page__eyebrow">{ui.sectionEyebrow}</p>
+        <h1 className="page__title">{sectionLabels(section, "de").name}</h1>
+        <p className="page__standfirst">{sectionLabels(section, "de").intro}</p>
 
         <LanguageSwitcher
           cluster={{
@@ -95,7 +103,7 @@ export default async function GermanSectionPage({ params }: Params) {
         />
 
         {articles.length === 0 ? (
-          <p className="empty-state">{ui.emptyState}</p>
+          <p className="empty-state">{ui.emptySection}</p>
         ) : (
           <>
             <h2 className="sr-only">{ui.latestArticles}</h2>

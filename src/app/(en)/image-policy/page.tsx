@@ -1,4 +1,5 @@
 import { PolicyPage } from "@/components/policy-page";
+import { staticAlternates } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -6,12 +7,13 @@ export const metadata = pageMetadata({
   title: "Image and AI policy",
   description:
     "How LogisticID Magazine sources images, what provenance it records, and how AI is and is not used in producing articles.",
+  languages: staticAlternates("image-policy"),
 });
 
 export default function ImagePolicyPage() {
   return (
     <PolicyPage
-      path="/image-policy"
+      route="image-policy"
       standfirst="What appears alongside an article is a claim too. This page sets out where images come from and how AI is used."
       title="Image and AI policy"
     >

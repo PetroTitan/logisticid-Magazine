@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import { sections } from "@/content/sections";
+import { sectionLabels, sections } from "@/content/sections";
 import { defaultLocale, type Locale } from "@/config/locales";
 import { strings } from "@/config/ui-strings";
 import { articlesInSection } from "@/lib/corpus";
-import { sectionPath } from "@/lib/localized-routes";
-import { mainSiteTarget } from "@/lib/main-site-links";
+import { sectionPath, staticPath } from "@/lib/localized-routes";
+import { FOREIGN_LANGUAGE_MARKER, mainSiteTarget } from "@/lib/main-site-links";
 import { publisher } from "@/config/publisher";
 import { mainSiteUrl, site } from "@/lib/site";
 
@@ -34,29 +34,37 @@ export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {})
             <ul className="site-footer__list">
               {visibleSections.map((section) => (
                 <li key={section.slug}>
-                  <Link href={sectionPath(section.slug, locale)}>{section.name}</Link>
+                  <Link href={sectionPath(section.slug, locale)}>{sectionLabels(section, locale).name}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
+            {/*
+              The editorial standards, in the reader's language. Until Phase 4T
+              these were five English links under a German heading, marked with
+              a note saying so — honest while the pages existed only in
+              English, and a stale marker the moment they did not. Every one of
+              them now resolves through the route table, so the language of the
+              destination follows the language of the page by construction.
+            */}
             <h2 className="site-footer__heading">{ui.editorialStandards}</h2>
             <ul className="site-footer__list">
               <li>
-                <Link href="/editorial-policy">Editorial policy</Link>
+                <Link href={staticPath("editorial-policy", locale)}>{ui.editorialPolicy}</Link>
               </li>
               <li>
-                <Link href="/sourcing-policy">Sourcing policy</Link>
+                <Link href={staticPath("sourcing-policy", locale)}>{ui.sourcingPolicy}</Link>
               </li>
               <li>
-                <Link href="/image-policy">Image and AI policy</Link>
+                <Link href={staticPath("image-policy", locale)}>{ui.imagePolicy}</Link>
               </li>
               <li>
-                <Link href="/corrections">Corrections</Link>
+                <Link href={staticPath("corrections", locale)}>{ui.corrections}</Link>
               </li>
               <li>
-                <Link href="/authors">Authors</Link>
+                <Link href={staticPath("authors", locale)}>{ui.authors}</Link>
               </li>
             </ul>
           </div>
@@ -65,13 +73,13 @@ export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {})
             <h2 className="site-footer__heading">{ui.follow}</h2>
             <ul className="site-footer__list">
               <li>
-                <Link href="/rss.xml">RSS feed</Link>
+                <Link href={staticPath("rss", locale)}>{ui.rssFeed}</Link>
               </li>
               <li>
-                <Link href="/atom.xml">Atom feed</Link>
+                <Link href={staticPath("atom", locale)}>{ui.atomFeed}</Link>
               </li>
               <li>
-                <Link href="/feed.json">JSON Feed</Link>
+                <Link href={staticPath("json-feed", locale)}>{ui.jsonFeed}</Link>
               </li>
             </ul>
           </div>
@@ -79,31 +87,36 @@ export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {})
           <div>
             <h2 className="site-footer__heading">LogisticID</h2>
             <ul className="site-footer__list">
-              <li>
-                <a href={mainSiteUrl(mainSiteTarget("/", locale).path).href}>
-                  {localized ? "Startseite" : "Home"}
-                </a>
-              </li>
-              <li>
-                <a href={mainSiteUrl(mainSiteTarget("/road-freight", locale).path).href}>
-                  {localized ? "Straßengüterverkehr" : "Road freight"}
-                </a>
-              </li>
-              <li>
-                <a href={mainSiteUrl("/shippers").href} hrefLang="en" lang="en">
-                  For shippers
-                </a>
-              </li>
-              <li>
-                <a href={mainSiteUrl("/carriers").href} hrefLang="en" lang="en">
-                  For carriers
-                </a>
-              </li>
-              <li>
-                <a href={mainSiteUrl(mainSiteTarget("/contact", locale).path).href}>
-                  {localized ? "Kontakt" : "Contact"}
-                </a>
-              </li>
+              {/*
+                `/shippers` and `/carriers` carried `hrefLang="en"` and an
+                English label here because the main site had no German version
+                of either. Phase 4S-B1 published `/de/versender` and
+                `/de/transportunternehmen`, and the marker went on saying
+                otherwise. It now comes from the route mirror, which is the
+                only thing that knows.
+              */}
+              {(
+                [
+                  ["/", ui.mainHome],
+                  ["/road-freight", ui.mainRoadFreight],
+                  ["/shippers", ui.mainShippers],
+                  ["/carriers", ui.mainCarriers],
+                  ["/contact", ui.mainContact],
+                ] as const
+              ).map(([path, label]) => {
+                const target = mainSiteTarget(path, locale);
+                return (
+                  <li key={path}>
+                    <a
+                      href={mainSiteUrl(target.path).href}
+                      {...(target.foreignLanguage ? { hrefLang: "en", lang: "en" } : {})}
+                    >
+                      {label}
+                      {target.foreignLanguage ? FOREIGN_LANGUAGE_MARKER[locale] : ""}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -113,12 +126,8 @@ export function SiteFooter({ locale = defaultLocale }: { locale?: Locale } = {})
             {site.name} {ui.publishedBy} {site.parentName}. Die Beiträge erklären, wie
             europäischer Straßengüterverkehr funktioniert. Sie sind allgemeine
             Information und Berichterstattung, keine Beratung zu einer konkreten
-            Sendung.{" "}
-            {ui.readInEnglishNote}{" "}
-            <Link href="/editorial-policy" hrefLang="en" lang="en">
-              Editorial policy
-            </Link>
-            .
+            Sendung — was das in der Praxis bedeutet, steht in den{" "}
+            <Link href={staticPath("editorial-policy", "de")}>{ui.editorialPolicy}</Link>.
           </p>
         ) : (
           <p className="site-footer__note">

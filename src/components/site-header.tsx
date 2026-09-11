@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 import { Brand } from "@/components/brand";
-import { defaultLocale, localeDetails, type Locale } from "@/config/locales";
-import { sections } from "@/content/sections";
+import { defaultLocale, type Locale } from "@/config/locales";
+import { sectionLabels, sections } from "@/content/sections";
 import { articlesInSection } from "@/lib/corpus";
-import { indexPath, sectionPath } from "@/lib/localized-routes";
+import { strings } from "@/config/ui-strings";
+import { indexPath, sectionPath, staticPath } from "@/lib/localized-routes";
 import { mainSiteUrl } from "@/lib/site";
 
 /**
@@ -39,7 +40,7 @@ export function SiteHeader({ locale = defaultLocale }: { locale?: Locale } = {})
   return (
     <header className="site-header">
       <div className="shell site-header__inner">
-        <Brand href={indexPath(locale)} />
+        <Brand href={indexPath(locale)} locale={locale} />
         <nav aria-label="LogisticID Magazine" className="site-nav">
           {visible.map((section) => (
             <Link
@@ -47,21 +48,16 @@ export function SiteHeader({ locale = defaultLocale }: { locale?: Locale } = {})
               href={sectionPath(section.slug, locale)}
               key={section.slug}
             >
-              {section.name}
+              {sectionLabels(section, locale).name}
             </Link>
           ))}
-          {locale === defaultLocale && (
-            <Link className="site-nav__link" href="/search">
-              Search
-            </Link>
-          )}
-          {locale !== defaultLocale && (
-            /* Search indexes the English corpus only, so it is offered as an
-               English destination rather than presented as a German feature. */
-            <Link className="site-nav__link" href="/search" hrefLang="en" lang="en">
-              {localeDetails.en.nativeLabel}
-            </Link>
-          )}
+          {/* Search is per language: each locale has its own page over its own
+              generated index, so a German reader searching German articles
+              gets German results rather than an English corpus behind a link
+              labelled "English". */}
+          <Link className="site-nav__link" href={staticPath("search", locale)}>
+            {strings(locale).search}
+          </Link>
           <a className="site-nav__link site-nav__exit" href={mainSiteUrl("/").href}>
             LogisticID.com
           </a>

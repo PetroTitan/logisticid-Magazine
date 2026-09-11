@@ -5,6 +5,32 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { searchDocuments, type SearchDocument, type SearchIndex } from "@/lib/search";
 
 /**
+ * The strings this control needs, handed in from the server.
+ *
+ * A plain serialisable object, not a locale code and a lookup: that keeps the
+ * dictionary out of the only client bundle in the application, and it means
+ * adding a language ships no extra JavaScript to anybody. There is no runtime
+ * translation here and there is not going to be one.
+ */
+export type SearchLabels = {
+  fieldLabel: string;
+  placeholder: string;
+  submit: string;
+  indexFailed: string;
+  indexFailedLinkText: string;
+  indexFailedTail: string;
+  prompt: string;
+  loading: string;
+  noResults: string;
+  resultsOne: string;
+  resultsMany: string;
+};
+
+function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
+}
+
+/**
  * Magazine search.
  *
  * The only client component in the application. It reads the query from the
@@ -34,7 +60,16 @@ function readQueryFromLocation(): string {
   return new URLSearchParams(window.location.search).get("q") ?? "";
 }
 
-export function SearchClient({ indexPath }: { indexPath: string }) {
+export function SearchClient({
+  indexPath,
+  homePath,
+  labels,
+}: {
+  indexPath: string;
+  /** Where "the Magazine home page" goes, in this page's language. */
+  homePath: string;
+  labels: SearchLabels;
+}) {
   const urlQuery = useSyncExternalStore(subscribeToLocation, readQueryFromLocation, () => "");
 
   // `null` until the reader types, so the address bar stays authoritative for
@@ -85,7 +120,7 @@ export function SearchClient({ indexPath }: { indexPath: string }) {
         role="search"
       >
         <label className="sr-only" htmlFor="magazine-search">
-          Search LogisticID Magazine
+          {labels.fieldLabel}
         </label>
         <input
           autoComplete="off"
@@ -93,39 +128,40 @@ export function SearchClient({ indexPath }: { indexPath: string }) {
           id="magazine-search"
           name="q"
           onChange={(event) => setTyped(event.target.value)}
-          placeholder="Search articles"
+          placeholder={labels.placeholder}
           type="search"
           value={query}
         />
         <button className="button" type="submit">
-          Search
+          {labels.submit}
         </button>
       </form>
 
       <div aria-live="polite" role="status">
         {state === "failed" ? (
           <p className="empty-state">
-            The search index could not be loaded. Every article is still reachable from the{" "}
-            <a href="../">Magazine home page</a> and the section pages.
+            {labels.indexFailed} <a href={homePath}>{labels.indexFailedLinkText}</a>{" "}
+            {labels.indexFailedTail}
           </p>
         ) : trimmed === "" ? (
-          <p className="empty-state">Type a term to search published articles.</p>
+          <p className="empty-state">{labels.prompt}</p>
         ) : state === "loading" ? (
-          <p className="empty-state">Loading the search index…</p>
+          <p className="empty-state">{labels.loading}</p>
         ) : results.length === 0 ? (
-          <p className="empty-state">
-            No published article matches “{trimmed}”.
-          </p>
+          <p className="empty-state">{fill(labels.noResults, { query: trimmed })}</p>
         ) : (
           <>
             <p className="empty-state">
-              {results.length} {results.length === 1 ? "article" : "articles"} match “{trimmed}”.
+              {fill(results.length === 1 ? labels.resultsOne : labels.resultsMany, {
+                count: String(results.length),
+                query: trimmed,
+              })}
             </p>
             <ul className="article-list">
               {results.map((document) => (
                 <li className="article-list__item" key={document.id}>
                   <p className="article-card__meta">
-                    <span className="article-card__section">{document.section}</span>
+                    <span className="article-card__section">{document.sectionName}</span>
                     <time dateTime={document.publishedAt}>{document.publishedAt}</time>
                   </p>
                   <h2 className="article-card__title">

@@ -135,13 +135,26 @@ export type Author = {
   bio: string;
 };
 
-export type Section = {
-  slug: string;
+/** What a section is called, in one language. */
+export type SectionLabels = {
   name: string;
   /** One line describing the section, shown on the section page and in listings. */
   description: string;
   /** Longer standfirst for the section index. */
   intro: string;
+};
+
+/**
+ * A section of the Magazine.
+ *
+ * `slug` is the identity and is language-neutral — it is in the URL of
+ * articles that are already public. Everything a reader sees is in `labels`,
+ * which is total over the locales, so a new language cannot be added without
+ * naming every section in it.
+ */
+export type Section = {
+  slug: string;
+  labels: Readonly<Record<Locale, SectionLabels>>;
 };
 
 /**
