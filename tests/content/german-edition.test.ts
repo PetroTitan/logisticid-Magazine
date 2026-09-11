@@ -38,6 +38,7 @@ import { magazineUrl, sharedImageUrl } from "@/lib/site";
 const corpus = publishedArticles(loadArticles());
 const german = corpus.filter((article) => article.locale === "de");
 const english = corpus.filter((article) => article.locale === "en");
+const russian = corpus.filter((article) => article.locale === "ru");
 
 /**
  * THE GUARD ON THE GUARD.
@@ -56,6 +57,7 @@ describe("the suite examines the corpus it claims to", () => {
     expect(corpus.length).toBe(files.length);
     expect(german.length).toBeGreaterThan(0);
     expect(english.length).toBeGreaterThan(0);
+    expect(russian.length).toBeGreaterThan(0);
   });
 });
 
