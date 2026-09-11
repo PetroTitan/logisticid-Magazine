@@ -1,5 +1,6 @@
 import { localeDetails, locales, type Locale } from "@/config/locales";
 import { strings } from "@/config/ui-strings";
+import { BASE_PATH } from "@/lib/site";
 
 /**
  * The Magazine's language control.
@@ -40,7 +41,24 @@ export function LanguageSwitcher({
               </span>
             ) : (
               <a
-                href={cluster[code] as string}
+                /*
+                 * THE BASE PATH IS ADDED HERE, BY HAND, AND IT HAS TO BE.
+                 *
+                 * MEASURED THROUGH THE MAIN SITE'S REWRITE, ON THE LIVE PILOT
+                 * PAGES. This is a plain anchor, and `basePath` is a
+                 * `next/link` feature — so `/de/korrekturen` left the Magazine
+                 * entirely and asked the MAIN application for
+                 * `logisticid.com/de/korrekturen`, which does not exist. The
+                 * language control, on every Magazine page in both languages,
+                 * was a 404.
+                 *
+                 * Invisible in development, where the Magazine is reachable at
+                 * its own root as well; invisible in the sitemap, which builds
+                 * its URLs through `magazineUrl`; invisible to every test that
+                 * asserts the CLUSTER rather than the href. It only appears if
+                 * something follows the link on the host the reader is on.
+                 */
+                href={`${BASE_PATH}${cluster[code] as string}`}
                 hrefLang={localeDetails[code].hreflang}
                 lang={localeDetails[code].hreflang}
               >

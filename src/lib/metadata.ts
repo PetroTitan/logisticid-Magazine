@@ -39,6 +39,16 @@ export function pageMetadata(options: {
    */
   languages?: Record<string, string>;
   openGraph?: { type: "article"; publishedTime: string; modifiedTime?: string };
+  /**
+   * The social preview image, where the page has one.
+   *
+   * `summary_large_image` without an image is a declaration a card cannot
+   * honour: the platform falls back to a small card, and the page has told it
+   * to expect a large one. Passing the article's own hero — the licensed
+   * photograph already on the page, with a description in the page's own
+   * language — is both truthful and the only image the page actually has.
+   */
+  image?: { url: string; width: number; height: number; alt: string };
 }): Metadata {
   const canonical = magazineUrl(options.path).href;
   const locale = options.locale ?? defaultLocale;
@@ -65,6 +75,7 @@ export function pageMetadata(options: {
       title: socialTitle,
       description: socialDescription,
       locale: localeDetails[locale].hreflang,
+      ...(options.image === undefined ? {} : { images: [options.image] }),
       ...(options.openGraph === undefined
         ? {}
         : {
@@ -75,9 +86,11 @@ export function pageMetadata(options: {
           }),
     },
     twitter: {
-      card: "summary_large_image",
+      // A large card only where there is a large image to put on it.
+      card: options.image === undefined ? "summary" : "summary_large_image",
       title: socialTitle,
       description: socialDescription,
+      ...(options.image === undefined ? {} : { images: [options.image] }),
     },
   };
 }

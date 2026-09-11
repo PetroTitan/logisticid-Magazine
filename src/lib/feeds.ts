@@ -1,5 +1,6 @@
 import { defaultLocale, localeDetails, type Locale } from "@/config/locales";
 import { strings } from "@/config/ui-strings";
+import { getSection, sectionLabels } from "@/content/sections";
 import type { Article } from "@/content/types";
 import { articlePath, indexPath, staticPath } from "@/lib/localized-routes";
 import { magazineUrl } from "@/lib/site";
@@ -18,6 +19,12 @@ import { magazineUrl } from "@/lib/site";
  * stale-while-revalidate window gives quick propagation and cheap polling.
  */
 export const FEED_CACHE_CONTROL = "public, max-age=600, s-maxage=600, stale-while-revalidate=3600";
+
+/** A section's display name in the article's own language. */
+function sectionName(article: Article): string {
+  const section = getSection(article.section);
+  return section === undefined ? article.section : sectionLabels(section, article.locale).name;
+}
 
 /** Escape text for inclusion in XML character data or an attribute value. */
 export function escapeXml(value: string): string {
@@ -75,7 +82,11 @@ export function rssFeed(articles: readonly Article[], locale: Locale = defaultLo
         `      <guid isPermaLink="true">${escapeXml(articleUrl(article))}</guid>`,
         `      <description>${escapeXml(article.description)}</description>`,
         `      <pubDate>${rfc822(article.datePublished)}</pubDate>`,
-        `      <category>${escapeXml(article.section)}</category>`,
+        // The section NAME, in the feed's language — what a feed reader shows
+        // a person. The slug is the identity and stays out of the reader's
+        // view; `shipping-guides` inside a German document is a token, not a
+        // category.
+        `      <category>${escapeXml(sectionName(article))}</category>`,
         "    </item>",
       ].join("\n"),
     )

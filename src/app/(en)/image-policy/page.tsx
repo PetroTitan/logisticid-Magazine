@@ -1,5 +1,7 @@
+import Link from "next/link";
+
 import { PolicyPage } from "@/components/policy-page";
-import { staticAlternates } from "@/lib/localized-routes";
+import { staticAlternates, staticPath } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -60,7 +62,8 @@ export default function ImagePolicyPage() {
         not it is right, and will invent a regulation number as readily as it will recall one. In
         freight, acting on such an answer has customs, contractual and safety consequences, so the
         sourcing requirements in the{" "}
-        <a href="./sourcing-policy">sourcing policy</a> apply to every factual claim regardless of
+        <Link href={staticPath("sourcing-policy", "en")}>sourcing policy</Link> apply to every
+        factual claim regardless of
         how a draft was produced.
       </p>
     </PolicyPage>

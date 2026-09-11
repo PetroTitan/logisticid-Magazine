@@ -4,7 +4,7 @@ import type { Article } from "@/content/types";
 import { publisher as publisherIdentity } from "@/config/publisher";
 import { localeDetails, type Locale } from "@/config/locales";
 import { articlePath, authorPath } from "@/lib/localized-routes";
-import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
+import { magazineUrl, mainSiteUrl, sharedImageUrl, site } from "@/lib/site";
 
 /**
  * Structured data.
@@ -99,7 +99,7 @@ export function articleJsonLd(article: Article): JsonObject {
   if (article.heroImage !== undefined) {
     node["image"] = {
       "@type": "ImageObject",
-      url: magazineUrl(article.heroImage.src).href,
+      url: sharedImageUrl(article.heroImage.src).href,
       width: article.heroImage.width,
       height: article.heroImage.height,
     };

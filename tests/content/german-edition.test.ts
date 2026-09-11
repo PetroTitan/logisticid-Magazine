@@ -19,7 +19,7 @@ import {
   type MagazineStaticRoute,
 } from "@/lib/localized-routes";
 import { buildSearchIndex } from "@/lib/search";
-import { magazineUrl } from "@/lib/site";
+import { magazineUrl, sharedImageUrl } from "@/lib/site";
 
 /**
  * The German edition, as a whole.
@@ -148,6 +148,25 @@ describe("article identity in structured data", () => {
       // `LogisticID GmbH` would be a company that does not exist.
       expect(publisher["legalName"], article.id).toBe("LogisticID s.r.o.");
       expect(JSON.stringify(publisher), article.id).not.toMatch(/GmbH|AG\b|S\.A\./);
+    }
+  });
+
+  it("points the image at a URL that is actually served", () => {
+    /*
+     * MEASURED THROUGH THE MAIN SITE'S REWRITE, in both languages. The image
+     * URL was built through `magazineUrl`, which adds the base path, so the
+     * structured data named `/magazine/images/photography/…` — a 404 — while
+     * the `<img>` on the page requested `/images/photography/…` and got a 200.
+     * The page was right and the machine-readable copy of it was wrong, which
+     * is the only place this kind of defect can hide.
+     */
+    for (const article of corpus) {
+      const image = articleJsonLd(article)["image"] as Record<string, unknown> | undefined;
+      if (image === undefined) continue;
+      const url = image["url"] as string;
+      expect(url, article.id).not.toContain("/magazine/images/");
+      expect(url, article.id).toContain("/images/");
+      expect(url, article.id).toBe(sharedImageUrl((article.heroImage as { src: string }).src).href);
     }
   });
 
@@ -409,5 +428,35 @@ describe("source parity", () => {
         expect(cited.sourceType, `${article.id}/${cited.id}`).toBe(original.sourceType);
       }
     }
+  });
+});
+
+describe("the language control", () => {
+  /**
+   * MEASURED THROUGH THE MAIN SITE'S REWRITE. The switcher is a plain anchor,
+   * so Next.js does not add the base path to it, and every "Deutsch" and
+   * "English" link on every Magazine page pointed one level too high — at the
+   * MAIN application, which returns 404 for `/de/korrekturen`.
+   *
+   * The test renders the component to a string rather than asserting the
+   * cluster it is given, because the cluster was always right. What was wrong
+   * was the href built from it, and only an assertion about the href can tell
+   * the difference.
+   */
+  it("emits hrefs under the Magazine base path", async () => {
+    const { renderToStaticMarkup } = await import("react-dom/server");
+    const { LanguageSwitcher } = await import("@/components/language-switcher");
+    const { createElement } = await import("react");
+
+    const html = renderToStaticMarkup(
+      createElement(LanguageSwitcher, {
+        locale: "en" as const,
+        cluster: magazineStaticRoutes.corrections,
+      }),
+    );
+    for (const href of [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1] as string)) {
+      expect(href, html).toMatch(/^\/magazine\//);
+    }
+    expect(html).toContain(`href="/magazine${staticPath("corrections", "de")}"`);
   });
 });

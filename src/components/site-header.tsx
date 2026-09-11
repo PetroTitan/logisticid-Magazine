@@ -6,6 +6,7 @@ import { sectionLabels, sections } from "@/content/sections";
 import { articlesInSection } from "@/lib/corpus";
 import { strings } from "@/config/ui-strings";
 import { indexPath, sectionPath, staticPath } from "@/lib/localized-routes";
+import { mainSiteTarget } from "@/lib/main-site-links";
 import { mainSiteUrl } from "@/lib/site";
 
 /**
@@ -58,7 +59,17 @@ export function SiteHeader({ locale = defaultLocale }: { locale?: Locale } = {})
           <Link className="site-nav__link" href={staticPath("search", locale)}>
             {strings(locale).search}
           </Link>
-          <a className="site-nav__link site-nav__exit" href={mainSiteUrl("/").href}>
+          {/*
+            The way back out to the main site, IN THE READER'S LANGUAGE.
+            MEASURED IN THE CRAWL: it was `mainSiteUrl("/")` on every page, so
+            the last link in the German header — the one a reader takes to
+            leave the Magazine — landed on the English home. The label is the
+            domain and stays as it is; the destination is not the domain.
+          */}
+          <a
+            className="site-nav__link site-nav__exit"
+            href={mainSiteUrl(mainSiteTarget("/", locale).path).href}
+          >
             LogisticID.com
           </a>
         </nav>

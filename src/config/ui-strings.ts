@@ -116,8 +116,8 @@ export type UiStrings = {
 
   /* 404. */
   readonly notFoundTitle: string;
-  readonly notFoundStandfirst: string;
-  readonly notFoundCorrectionsLinkText: string;
+  /** A complete sentence: the 404 is bilingual and carries no inline links. */
+  readonly notFoundBody: string;
   readonly notFoundTryThese: string;
   readonly notFoundHome: string;
   readonly notFoundSearch: string;
@@ -218,9 +218,8 @@ export const uiStrings: Readonly<Record<Locale, UiStrings>> = {
     searchResultsMany: "{count} articles match “{query}”.",
 
     notFoundTitle: "This page does not exist",
-    notFoundStandfirst:
-      "The address may be mistyped, or the article may never have been published. Nothing has been removed to hide it — corrections and withdrawals are recorded on the",
-    notFoundCorrectionsLinkText: "corrections page",
+    notFoundBody:
+      "The address may be mistyped, or the article may never have been published. Nothing has been removed to hide it — corrections and withdrawals are recorded on the corrections page.",
     notFoundTryThese: "Try one of these",
     notFoundHome: "LogisticID Magazine home",
     notFoundSearch: "Search the Magazine",
@@ -356,9 +355,8 @@ export const uiStrings: Readonly<Record<Locale, UiStrings>> = {
     searchResultsMany: "{count} Beiträge passen zu „{query}“.",
 
     notFoundTitle: "Diese Seite gibt es nicht",
-    notFoundStandfirst:
-      "Möglicherweise ist die Adresse falsch geschrieben, oder der Beitrag ist nie erschienen. Nichts wurde entfernt, um es zu verbergen — Korrekturen und Rücknahmen sind verzeichnet auf der",
-    notFoundCorrectionsLinkText: "Korrekturseite",
+    notFoundBody:
+      "Möglicherweise ist die Adresse falsch geschrieben, oder der Beitrag ist nie erschienen. Nichts wurde entfernt, um es zu verbergen — Korrekturen und Rücknahmen sind auf der Korrekturseite verzeichnet.",
     notFoundTryThese: "Vielleicht eine dieser Seiten",
     notFoundHome: "Übersicht von LogisticID Magazine",
     notFoundSearch: "Das Magazin durchsuchen",

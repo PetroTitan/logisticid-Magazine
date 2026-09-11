@@ -84,3 +84,32 @@ export function mainSiteUrl(path = "/"): URL {
   }
   return assertNoInfrastructureHost(new URL(path, getSiteOrigin()));
 }
+
+/**
+ * The absolute URL of a shared image asset.
+ *
+ * MEASURED, AND THE REASON THIS IS NOT `magazineUrl`. The Magazine has no
+ * `public/` directory at all — `prepare-standalone` says so on every build —
+ * and the photography an article uses is served by the MAIN application from
+ * the host root. An article's `heroImage.src` is therefore a host-root path,
+ * which is why the `<img>` on the page (a bare `src`, untouched by `basePath`)
+ * has always resolved correctly.
+ *
+ * The structured data did not. It built the image URL through `magazineUrl`,
+ * which added the base path and produced
+ * `logisticid.com/magazine/images/photography/…` — a 404, published to every
+ * machine that reads the page, in both languages, since the images were added.
+ * Invisible on the page, because the page never requests that URL.
+ */
+export function sharedImageUrl(path: string): URL {
+  if (!path.startsWith("/")) {
+    throw new Error(`Image path must start with "/" (got ${JSON.stringify(path)}).`);
+  }
+  if (path.startsWith(`${BASE_PATH}/`)) {
+    throw new Error(
+      `Image path must not carry the "${BASE_PATH}" prefix (got ${path}). ` +
+        "Shared photography is served from the host root by the main application.",
+    );
+  }
+  return assertNoInfrastructureHost(new URL(path, getSiteOrigin()));
+}
