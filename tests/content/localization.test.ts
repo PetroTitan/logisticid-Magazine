@@ -34,6 +34,7 @@ import {
   mainSiteTarget,
   mirroredMainSitePaths,
 } from "@/lib/main-site-links";
+import { pageMetadata } from "@/lib/metadata";
 
 /**
  * Guards on the Magazine's localization.
@@ -87,6 +88,23 @@ describe("locale parity with the main site", () => {
     // `de-DE` would claim the content targets Germany specifically. It does not.
     for (const locale of locales) {
       expect(localeDetails[locale].hreflang, locale).toMatch(/^[a-z]{2}$/);
+    }
+  });
+
+  it("keeps Open Graph locales in language_TERRITORY format", () => {
+    expect(localeDetails.en.openGraphLocale).toBe("en_US");
+    expect(localeDetails.de.openGraphLocale).toBe("de_DE");
+    expect(localeDetails.ru.openGraphLocale).toBe("ru_RU");
+
+    for (const locale of locales) {
+      expect(localeDetails[locale].openGraphLocale, locale).toMatch(/^[a-z]{2}_[A-Z]{2}$/);
+      const metadata = pageMetadata({
+        path: indexPath(locale),
+        title: "Locale contract",
+        description: "Locale contract test",
+        locale,
+      });
+      expect(metadata.openGraph?.locale).toBe(localeDetails[locale].openGraphLocale);
     }
   });
 

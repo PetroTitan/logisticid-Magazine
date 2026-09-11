@@ -74,7 +74,7 @@ export function pageMetadata(options: {
       siteName: site.name,
       title: socialTitle,
       description: socialDescription,
-      locale: localeDetails[locale].hreflang,
+      locale: localeDetails[locale].openGraphLocale,
       ...(options.image === undefined ? {} : { images: [options.image] }),
       ...(options.openGraph === undefined
         ? {}
