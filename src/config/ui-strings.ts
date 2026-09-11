@@ -362,6 +362,119 @@ export const uiStrings: Readonly<Record<Locale, UiStrings>> = {
     notFoundSearch: "Das Magazin durchsuchen",
     notFoundMainSite: "Die LogisticID-Website",
   },
+  ru: {
+    skipToContent: "Перейти к содержанию",
+    sections: "Рубрики",
+    latestArticles: "Новые материалы",
+    emptyState: "На русском пока не вышло ни одного материала.",
+    emptySection: "В этой рубрике на русском пока не вышло ни одного материала.",
+    editorialStandards: "Редакционные принципы",
+    follow: "Подписка",
+    languageLabel: "Язык",
+    standfirst:
+      "Разборы того, как на самом деле работают европейские автомобильные грузоперевозки, — для тех, кому приходится их организовывать. Каждое фактическое утверждение подкреплено источником, и каждый материал называет, где его указания заканчиваются и начинается оценка конкретной отправки.",
+    publishedBy: "издаёт",
+    readInEnglishNote: "",
+    feedTitle: "LogisticID Magazine — на русском",
+    feedDescription:
+      "Европейские автомобильные грузоперевозки, разобранные по существу: типы загрузки, практика отправок и как читать цифры о рынке — от LogisticID.",
+
+    homeTitle: "Европейские автомобильные грузоперевозки, разобранные по существу",
+    sectionEyebrow: "Рубрика",
+
+    brandHome: "LogisticID Magazine — главная",
+    magazineCrumb: "Журнал",
+    breadcrumbLabel: "Навигационная цепочка",
+    byline: "Автор:",
+    published: "Опубликовано",
+    updated: "Обновлено",
+    minuteRead: "мин. чтения",
+    appliesTo: "Применимо к:",
+    positionChecked: "Состояние проверено",
+    correction: "Исправление",
+    illustration: "Иллюстрация",
+    updateHistory: "История изменений",
+    onTheMainSite: "На сайте LogisticID",
+    relatedReading: "Читать дальше",
+    quotePrompt: "Нужно организовать отправку?",
+    /*
+     * Says where the enquiry goes, not what happens to it. The main site's
+     * English pages were corrected once for claiming that a person reads and
+     * answers every enquiry; Russian must not reintroduce it.
+     */
+    quoteLinkText: "Отправить маршрут, груз и сроки",
+
+    noteBoundary: "Где этот материал заканчивается и начинается профессиональная оценка",
+    noteContext: "Для контекста",
+    citationLabel: "Источник {number}",
+    tableLabel: "Таблица",
+
+    references: "Источники",
+    accessed: "Дата обращения",
+    partialConsultation:
+      "Просмотрено как аннотация или резюме; полный текст не находится в открытом доступе и здесь не выдаётся за прочитанный целиком.",
+    /*
+     * The KIND of source, which is a label and therefore translated. What the
+     * source itself says — its title, its publisher, its date, its report
+     * number — is evidence and stays exactly as published, in whatever
+     * language it was published in.
+     */
+    sourceTypes: {
+      legislation: "Нормативный акт",
+      "official-guidance": "Официальные разъяснения",
+      statistics: "Официальная статистика",
+      "research-paper": "Научная работа",
+      "institutional-report": "Отчёт организации",
+      standard: "Стандарт",
+      "technical-documentation": "Техническая документация",
+      "company-announcement": "Сообщение компании",
+      news: "Публикация в прессе",
+    },
+
+    editorialPolicy: "Редакционные принципы",
+    sourcingPolicy: "Работа с источниками",
+    imagePolicy: "Изображения и ИИ",
+    corrections: "Исправления",
+    authors: "Авторы",
+    search: "Поиск",
+    rssFeed: "RSS-лента",
+    atomFeed: "Atom-лента",
+    jsonFeed: "JSON Feed",
+
+    mainHome: "Главная",
+    mainRoadFreight: "Автомобильные грузоперевозки",
+    mainShippers: "Грузоотправителям",
+    mainCarriers: "Перевозчикам",
+    mainContact: "Контакты",
+
+    articlesHeading: "Материалы",
+    noArticlesForByline: "Под этой подписью пока не вышло ни одного материала.",
+
+    searchStandfirst:
+      "Поиск работает целиком в вашем браузере по заранее собранному индексу. Ничто из введённого никуда не отправляется.",
+    searchFieldLabel: "Поиск по LogisticID Magazine",
+    searchPlaceholder: "Искать материалы",
+    searchSubmit: "Найти",
+    searchIndexFailed:
+      "Не удалось загрузить поисковый индекс. Все материалы по-прежнему доступны через",
+    searchIndexFailedLinkText: "главную страницу журнала",
+    searchIndexFailedTail: "и страницы рубрик.",
+    searchPrompt: "Введите слово, чтобы искать по опубликованным материалам.",
+    searchLoading: "Поисковый индекс загружается…",
+    /* Russian quotation marks. «…» is not decoration: “…” inside Russian prose
+       is the typographic tell of a translated interface. */
+    searchNoResults: "Ни один опубликованный материал не подходит под «{query}».",
+    searchResultsOne: "{count} материал подходит под «{query}».",
+    searchResultsMany: "{count} материалов подходят под «{query}».",
+
+    notFoundTitle: "Такой страницы нет",
+    notFoundBody:
+      "Возможно, адрес набран с ошибкой, или материал никогда не выходил. Ничего не убирали, чтобы это скрыть, — исправления и отзывы материалов записаны на странице исправлений.",
+    notFoundTryThese: "Может подойти одна из этих страниц",
+    notFoundHome: "Главная страница LogisticID Magazine",
+    notFoundSearch: "Поиск по журналу",
+    notFoundMainSite: "Сайт LogisticID",
+  },
 };
 
 export function strings(locale: Locale): UiStrings {
