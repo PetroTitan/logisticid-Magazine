@@ -57,6 +57,24 @@ function fail(line: number, message: string): never {
 export function headingId(text: string): string {
   const id = text
     .toLowerCase()
+    /*
+     * German letters are TRANSLITERATED, not dropped.
+     *
+     * Without this the rule below turns every umlaut into a hyphen, and the
+     * German pilot article shipped with `#was-tats-chlich-kalkuliert-wird` —
+     * a fragment nobody can read and nobody would type. Worse, it is lossy in
+     * a way that collides: `Grüße` and `Grosse` reduce to the same id, and the
+     * build had nothing to say about it.
+     *
+     * The mapping is the one the main site's URL policy already uses for
+     * German paths (docs/localization/de/style-guide.md): ä→ae, ö→oe, ü→ue,
+     * ß→ss. Using a second transliteration for fragments would make the same
+     * word slug differently depending on where it appeared.
+     */
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return id === "" ? "section" : id;
@@ -347,6 +365,26 @@ export function parseMarkdown(source: string): Block[] {
       i += 1;
     }
     blocks.push({ kind: "paragraph", children: parseInline(paragraph.join(" "), lineNo) });
+  }
+
+  /*
+   * Heading ids are derived, so two headings can collide without either being
+   * wrong. A duplicate `id` makes an in-page anchor land on whichever came
+   * first — silently, and only for the second one — and it is invalid HTML
+   * that no build step would otherwise mention. German raises the odds: the
+   * transliteration in `headingId` maps several distinct spellings onto one
+   * id, which is the price of readable fragments and is worth paying only
+   * with this check behind it.
+   */
+  const seenIds = new Set<string>();
+  for (const block of blocks) {
+    if (block.kind !== "heading") continue;
+    if (seenIds.has(block.id)) {
+      throw new MarkdownError(
+        `two headings produce the same id "${block.id}". An in-page anchor can only reach the first, so give one of them different wording.`,
+      );
+    }
+    seenIds.add(block.id);
   }
 
   return blocks;

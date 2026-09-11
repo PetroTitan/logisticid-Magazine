@@ -275,12 +275,52 @@ describe("hreflang", () => {
   });
 
   it("gives an untranslated article no alternates at all", () => {
+    /**
+     * THIS TEST OUTLIVED ITS FIXTURE, WHICH IS THE POINT OF WRITING IT DOWN.
+     *
+     * It used to find the untranslated articles in the real corpus and assert
+     * that none of them advertised a German version. Phase 4T translated the
+     * last one, so the search returned nothing and the guard — correctly —
+     * refused to pass over an empty list.
+     *
+     * The rule it protects has not stopped mattering; it has stopped being
+     * reachable from the corpus. The next English article published without a
+     * translation is exactly when a fake `hreflang="de"` would ship. So the
+     * invariant is now tested against a corpus built for it, and the real
+     * corpus is checked separately below — vacuously true today, and the
+     * thing that fails on the day it is not.
+     */
+    const englishOnly = {
+      id: "an-english-only-article",
+      locale: "en" as const,
+      section: "road-freight",
+      slug: "an-english-only-article",
+    };
+    const paired = {
+      id: "a-paired-article",
+      locale: "en" as const,
+      section: "road-freight",
+      slug: "a-paired-article",
+    };
+    const translation = {
+      id: "ein-uebersetzter-beitrag",
+      locale: "de" as const,
+      section: "road-freight",
+      slug: "ein-uebersetzter-beitrag",
+      translationOf: "a-paired-article",
+    };
+    const synthetic = [englishOnly, paired, translation] as unknown as Article[];
+
+    expect(articleAlternates(synthetic[0] as Article, synthetic)).toBeUndefined();
+    expect(articleAlternates(synthetic[1] as Article, synthetic)).toBeDefined();
+  });
+
+  it("advertises no translation for any real article that has none", () => {
     const lonely = corpus.filter(
       (article) =>
         article.translationOf === undefined &&
         !corpus.some((other) => other.translationOf === article.id),
     );
-    expect(lonely.length, "every article is translated — nothing to test").toBeGreaterThan(0);
     for (const article of lonely) {
       expect(articleAlternates(article, corpus), article.id).toBeUndefined();
     }
