@@ -7,7 +7,7 @@ import { strings } from "@/config/ui-strings";
 import { sectionLabels, sections } from "@/content/sections";
 import { publicArticles } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
-import { indexPath } from "@/lib/localized-routes";
+import { indexAlternates, indexCluster } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
 
@@ -24,11 +24,7 @@ export const metadata = pageMetadata({
    * cluster a search engine will not act on. The German index has carried its
    * half since Phase 4S-A; this is the other half.
    */
-  languages: {
-    en: magazineUrl("/").href,
-    de: magazineUrl(indexPath("de")).href,
-    "x-default": magazineUrl("/").href,
-  },
+  languages: indexAlternates(),
 });
 
 export default function HomePage() {
@@ -55,7 +51,7 @@ export default function HomePage() {
 
         {/* The other half of the pair the German index has offered since
             4S-A. A switcher on one side only is a door that opens one way. */}
-        <LanguageSwitcher cluster={{ en: "/", de: indexPath("de") }} locale="en" />
+        <LanguageSwitcher cluster={indexCluster()} locale="en" />
 
         {lead === undefined ? (
           <p className="empty-state">{ui.emptyState}</p>

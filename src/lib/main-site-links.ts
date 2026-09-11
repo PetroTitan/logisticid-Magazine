@@ -101,6 +101,55 @@ const GERMAN_EQUIVALENTS: Readonly<Record<string, string | null>> = {
   "/cookies": null,
 };
 
+/**
+ * The Russian mirror of the main site's route manifest.
+ *
+ * Deliberately SMALLER than the German one, and that is the whole point of
+ * modelling a missing translation as a missing value rather than a derivable
+ * path. The main site's Phase 4U published its commercial core in Russian and
+ * reserved the rest; a Magazine article that links to a main-site page with no
+ * Russian version gets the English page and a visible marker, exactly as the
+ * German edition did before its own corpus was complete.
+ *
+ * `null` means the main site publishes the page and has decided it stays
+ * English. Absent means no Russian page exists YET. Both produce an English
+ * destination with a marker; recording the difference is what lets a future
+ * phase tell a deliberate exception from an entry nobody has added.
+ */
+const RUSSIAN_EQUIVALENTS: Readonly<Record<string, string | null>> = {
+  "/": "/ru",
+  "/services": "/ru/uslugi",
+  "/freight-forwarding": "/ru/ekspedirovanie",
+  "/road-freight": "/ru/avtomobilnye-gruzoperevozki",
+  "/road-freight/ftl": "/ru/avtomobilnye-gruzoperevozki/polnaya-zagruzka",
+  "/road-freight/ltl": "/ru/avtomobilnye-gruzoperevozki/chastichnaya-zagruzka",
+  "/road-freight/express": "/ru/avtomobilnye-gruzoperevozki/ekspress-perevozki",
+  "/road-freight/pallets": "/ru/avtomobilnye-gruzoperevozki/palletnye-perevozki",
+  "/road-freight/groupage": "/ru/avtomobilnye-gruzoperevozki/sbornye-gruzy",
+  "/shippers": "/ru/gruzootpravitelyam",
+  "/carriers": "/ru/perevozchikam",
+  "/carriers/standards": "/ru/perevozchikam/trebovaniya",
+  "/request-a-quote": "/ru/zapros-stoimosti",
+  "/become-a-carrier": "/ru/stat-partnerom",
+  "/about": "/ru/o-kompanii",
+  "/contact": "/ru/kontakty",
+  "/legal": "/ru/pravovaya-informatsiya",
+  "/image-credits": "/ru/prava-na-izobrazheniya",
+
+  /* Deliberately English on the main site, in every language. */
+  "/team": null,
+  "/privacy": null,
+  "/terms": null,
+  "/cookies": null,
+};
+
+const EQUIVALENTS_BY_LOCALE: Readonly<
+  Partial<Record<Locale, Readonly<Record<string, string | null>>>>
+> = {
+  de: GERMAN_EQUIVALENTS,
+  ru: RUSSIAN_EQUIVALENTS,
+};
+
 export type MainSiteTarget = {
   /** The path on the main site, already localized where possible. */
   readonly path: string;
@@ -110,21 +159,21 @@ export type MainSiteTarget = {
 
 export function mainSiteTarget(path: string, locale: Locale): MainSiteTarget {
   if (locale === defaultLocale) return { path, foreignLanguage: false };
-  const german = GERMAN_EQUIVALENTS[path];
-  return german === undefined || german === null
+  const translated = EQUIVALENTS_BY_LOCALE[locale]?.[path];
+  return translated === undefined || translated === null
     ? { path, foreignLanguage: true }
-    : { path: german, foreignLanguage: false };
+    : { path: translated, foreignLanguage: false };
 }
 
 /** Every main-site path this mirror knows, for the parity test. */
-export function mirroredMainSitePaths(): readonly string[] {
-  return Object.keys(GERMAN_EQUIVALENTS);
+export function mirroredMainSitePaths(locale: Locale = "de"): readonly string[] {
+  return Object.keys(EQUIVALENTS_BY_LOCALE[locale] ?? {});
 }
 
 /** Paths the main site publishes in English only, on purpose. */
-export function englishOnlyMainSitePaths(): readonly string[] {
-  return Object.entries(GERMAN_EQUIVALENTS)
-    .filter(([, german]) => german === null)
+export function englishOnlyMainSitePaths(locale: Locale = "de"): readonly string[] {
+  return Object.entries(EQUIVALENTS_BY_LOCALE[locale] ?? {})
+    .filter(([, translated]) => translated === null)
     .map(([path]) => path);
 }
 
@@ -132,4 +181,5 @@ export function englishOnlyMainSitePaths(): readonly string[] {
 export const FOREIGN_LANGUAGE_MARKER: Readonly<Record<Locale, string>> = {
   en: "",
   de: " (englisch)",
+  ru: " (на английском)",
 };

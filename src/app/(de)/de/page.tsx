@@ -5,7 +5,7 @@ import { strings } from "@/config/ui-strings";
 import { sectionLabels, sections } from "@/content/sections";
 import { articlesInSection, publicArticles } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
-import { indexPath, sectionPath } from "@/lib/localized-routes";
+import { indexPath, sectionPath, indexAlternates, indexCluster } from "@/lib/localized-routes";
 import { mainSiteTarget } from "@/lib/main-site-links";
 import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
@@ -24,11 +24,7 @@ export const metadata = pageMetadata({
    * an article, an index has no `translationOf` edge to read. Both entries are
    * absolute URLs on the canonical host.
    */
-  languages: {
-    en: magazineUrl("/").href,
-    de: magazineUrl(indexPath("de")).href,
-    "x-default": magazineUrl("/").href,
-  },
+  languages: indexAlternates(),
 });
 
 /**
@@ -63,10 +59,7 @@ export default function GermanHomePage() {
         <h1 className="page__title">{ui.homeTitle}</h1>
         <p className="page__standfirst">{ui.standfirst}</p>
 
-        <LanguageSwitcher
-          cluster={{ en: "/", de: indexPath("de") }}
-          locale="de"
-        />
+        <LanguageSwitcher cluster={indexCluster()} locale="de" />
 
         {lead === undefined ? (
           <p className="empty-state">{ui.emptyState}</p>

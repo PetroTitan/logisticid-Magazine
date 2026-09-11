@@ -42,6 +42,31 @@ export function sectionPath(section: string, locale: Locale): string {
   return `${localeDetails[locale].pathPrefix}/${section}`;
 }
 
+/**
+ * `alternates.languages` for the index, which exists in every language.
+ *
+ * ONE FUNCTION, THREE CALLERS. Each index page used to state its own
+ * two-entry cluster, and adding a third language left the English and German
+ * indexes advertising each other while the Russian one advertised all three —
+ * a one-sided cluster, which is the defect the main site's Phase 4S-B2 shipped
+ * 59 of. Deriving it once means the three cannot disagree.
+ */
+export function indexAlternates(): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    languages[localeDetails[locale].hreflang] = magazineUrl(indexPath(locale)).href;
+  }
+  languages["x-default"] = magazineUrl(indexPath(defaultLocale)).href;
+  return languages;
+}
+
+/** The switcher cluster for the index, as Magazine-relative paths. */
+export function indexCluster(): Readonly<Record<Locale, string>> {
+  return Object.fromEntries(
+    locales.map((locale) => [locale, indexPath(locale)]),
+  ) as Readonly<Record<Locale, string>>;
+}
+
 /** The Magazine-relative path of the index in a language. */
 export function indexPath(locale: Locale): string {
   return localeDetails[locale].pathPrefix === "" ? "/" : localeDetails[locale].pathPrefix;
@@ -143,17 +168,33 @@ export function populatedLocales(articles: readonly Article[]): readonly Locale[
  * path.
  */
 export const magazineStaticRoutes = {
-  "editorial-policy": { en: "/editorial-policy", de: "/de/redaktionsrichtlinien" },
-  "sourcing-policy": { en: "/sourcing-policy", de: "/de/quellenrichtlinien" },
-  "image-policy": { en: "/image-policy", de: "/de/bild-und-ki-richtlinien" },
-  corrections: { en: "/corrections", de: "/de/korrekturen" },
-  authors: { en: "/authors", de: "/de/autoren" },
-  search: { en: "/search", de: "/de/suche" },
-  rss: { en: "/rss.xml", de: "/de/rss.xml" },
-  atom: { en: "/atom.xml", de: "/de/atom.xml" },
-  "json-feed": { en: "/feed.json", de: "/de/feed.json" },
-  "search-index": { en: "/search-index.json", de: "/de/search-index.json" },
-  latest: { en: "/latest.json", de: "/de/latest.json" },
+  "editorial-policy": {
+    en: "/editorial-policy",
+    de: "/de/redaktionsrichtlinien",
+    ru: "/ru/redaktsionnye-printsipy",
+  },
+  "sourcing-policy": {
+    en: "/sourcing-policy",
+    de: "/de/quellenrichtlinien",
+    ru: "/ru/rabota-s-istochnikami",
+  },
+  "image-policy": {
+    en: "/image-policy",
+    de: "/de/bild-und-ki-richtlinien",
+    ru: "/ru/izobrazheniya-i-ii",
+  },
+  corrections: { en: "/corrections", de: "/de/korrekturen", ru: "/ru/ispravleniya" },
+  authors: { en: "/authors", de: "/de/autoren", ru: "/ru/avtory" },
+  search: { en: "/search", de: "/de/suche", ru: "/ru/poisk" },
+  rss: { en: "/rss.xml", de: "/de/rss.xml", ru: "/ru/rss.xml" },
+  atom: { en: "/atom.xml", de: "/de/atom.xml", ru: "/ru/atom.xml" },
+  "json-feed": { en: "/feed.json", de: "/de/feed.json", ru: "/ru/feed.json" },
+  "search-index": {
+    en: "/search-index.json",
+    de: "/de/search-index.json",
+    ru: "/ru/search-index.json",
+  },
+  latest: { en: "/latest.json", de: "/de/latest.json", ru: "/ru/latest.json" },
 } as const satisfies Readonly<Record<string, Readonly<Record<Locale, string>>>>;
 
 export type MagazineStaticRoute = keyof typeof magazineStaticRoutes;
@@ -188,12 +229,44 @@ export function authorAlternates(slug: string): Record<string, string> {
   return languages;
 }
 
-/** `alternates.languages` for the index of one section, which exists in both. */
-export function sectionAlternates(section: string): Record<string, string> {
+/**
+ * `alternates.languages` for the index of one section.
+ *
+ * TAKES THE LOCALES THAT ACTUALLY HAVE AN INDEX. This used to loop over every
+ * locale unconditionally, which was true while both translated locales held an
+ * article in every section and became false the moment a third language
+ * published one section and not the others — an `hreflang` pointing at a
+ * section index that is never generated, which is worse than none because a
+ * search engine acts on it.
+ *
+ * The caller knows: `generateStaticParams` in each translated section route
+ * applies exactly the same rule, so the two cannot disagree.
+ */
+export function sectionAlternates(
+  section: string,
+  available: readonly Locale[] = locales,
+): Record<string, string> | undefined {
+  const present = locales.filter(
+    (locale) => locale === defaultLocale || available.includes(locale),
+  );
+  if (present.length < 2) return undefined;
   const languages: Record<string, string> = {};
-  for (const locale of locales) {
+  for (const locale of present) {
     languages[localeDetails[locale].hreflang] = magazineUrl(sectionPath(section, locale)).href;
   }
   languages["x-default"] = magazineUrl(sectionPath(section, defaultLocale)).href;
   return languages;
+}
+
+/** The switcher cluster for a section index, as Magazine-relative paths. */
+export function sectionClusterFor(
+  section: string,
+  available: readonly Locale[] = locales,
+): Readonly<Partial<Record<Locale, string>>> {
+  const cluster: Partial<Record<Locale, string>> = {};
+  for (const locale of locales) {
+    if (locale !== defaultLocale && !available.includes(locale)) continue;
+    cluster[locale] = sectionPath(section, locale);
+  }
+  return cluster;
 }

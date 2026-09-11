@@ -8,7 +8,20 @@ import { strings } from "@/config/ui-strings";
 import { getSection, sectionLabels, sections } from "@/content/sections";
 import { articlesInSection } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
-import { indexPath, sectionPath } from "@/lib/localized-routes";
+import {
+  indexPath,
+  sectionAlternates,
+  sectionClusterFor,
+  sectionPath,
+} from "@/lib/localized-routes";
+import { defaultLocale, locales, type Locale } from "@/config/locales";
+
+/** The translated locales that publish an index for this section. */
+function translatedIndexes(section: string): readonly Locale[] {
+  return locales.filter(
+    (locale) => locale !== defaultLocale && articlesInSection(section, locale).length > 0,
+  );
+}
 import { mainSiteTarget } from "@/lib/main-site-links";
 import { pageMetadata } from "@/lib/metadata";
 import { magazineUrl, mainSiteUrl } from "@/lib/site";
@@ -42,12 +55,12 @@ export async function generateMetadata({ params }: Params) {
     locale: "de",
     title: sectionLabels(section, "de").name,
     description: sectionLabels(section, "de").description,
-    // Paired with the English section index, which always exists.
-    languages: {
-      en: magazineUrl(sectionPath(section.slug, "en")).href,
-      de: magazineUrl(sectionPath(section.slug, "de")).href,
-      "x-default": magazineUrl(sectionPath(section.slug, "en")).href,
-    },
+    // Only the languages whose index for this section exists. Derived by the
+    // same rule `generateStaticParams` applies, so the two cannot disagree.
+    ...(() => {
+      const languages = sectionAlternates(section.slug, translatedIndexes(section.slug));
+      return languages === undefined ? {} : { languages };
+    })(),
   });
 }
 
@@ -95,10 +108,7 @@ export default async function GermanSectionPage({ params }: Params) {
         <p className="page__standfirst">{sectionLabels(section, "de").intro}</p>
 
         <LanguageSwitcher
-          cluster={{
-            en: sectionPath(section.slug, "en"),
-            de: sectionPath(section.slug, "de"),
-          }}
+          cluster={sectionClusterFor(section.slug, translatedIndexes(section.slug))}
           locale="de"
         />
 
