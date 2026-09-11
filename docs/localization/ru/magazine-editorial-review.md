@@ -84,6 +84,17 @@ table.
 advertising each other while the Russian one advertised all three. That is the
 defect the main site's Phase 4S-B2 shipped 59 of. Derived once now.
 
+**The footer's standing note was German on every Russian page.** It read
+`localized ? German : English`, which was correct with two locales and selects
+German for any third one. All 16 Russian pages carried the German note and
+linked `/magazine/de/redaktionsrichtlinien` — 14 occurrences of a German page
+reached from a Russian one, unmarked. Found by crawling the rendered Russian
+pages through Main's `/magazine/*` rewrite and following every link; invisible
+in source, invisible to the type checker, and asserted by nothing. The note
+branches three ways now and resolves its own link through
+`staticPath("editorial-policy", locale)`, so the language of a note and the
+language of its target can no longer disagree.
+
 ## Verification
 
 Rendered HTML from a production build:
@@ -101,6 +112,9 @@ Rendered HTML from a production build:
   including an English or German slug under `/ru/`, a Russian slug under either
   of the other two, and `/ru/magazine/*`.
 - **174 tests pass** (151 before, 23 new).
+- **Russian link audit, on the running pair:** 16 Russian Magazine pages,
+  RU→RU 330 links, RU→EN 15, RU→DE 14 — every one of the 29 cross-language
+  destinations marked with `hrefLang` and `lang`, 0 unmarked, 0 broken.
 - Client JS **577,127 → 577,231 bytes**, +104. No locale corpus reaches the
   browser.
 
@@ -112,3 +126,11 @@ Rendered HTML from a production build:
 - **Section slugs stay English in Russian paths** — `/magazine/ru/road-freight/…`
   — as they do in German. Translating them is a taxonomy decision for all
   sections at once, and it moves published URLs.
+- **The search page has no language switcher in any language** —
+  `/magazine/search`, `/magazine/de/suche` and `/magazine/ru/poisk` all omit
+  it. Russian is at parity with the other two; the gap is older than this
+  phase.
+- **`pnpm validate` leaves `.next/standalone` without static assets**, because
+  it ends at `validate-routing.mjs`, which runs its own `next build` and not
+  `prepare-standalone`. Run `pnpm build` afterwards, and assert a stylesheet
+  answers 200 before trusting any browser measurement.
