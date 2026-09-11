@@ -34,6 +34,8 @@ export type LocaleDetail = {
   readonly nativeLabel: string;
   /** Path prefix INSIDE the base path: "" for English, "/de" for German. */
   readonly pathPrefix: string;
+  /** Open Graph requires `language_TERRITORY`, unlike territory-neutral hreflang. */
+  readonly openGraphLocale: string;
   /** BCP 47 tag used for date formatting. */
   readonly formattingLocale: string;
 };
@@ -45,6 +47,7 @@ export const localeDetails: Readonly<Record<Locale, LocaleDetail>> = {
     label: "English",
     nativeLabel: "English",
     pathPrefix: "",
+    openGraphLocale: "en_US",
     formattingLocale: "en-GB",
   },
   de: {
@@ -53,6 +56,7 @@ export const localeDetails: Readonly<Record<Locale, LocaleDetail>> = {
     label: "German",
     nativeLabel: "Deutsch",
     pathPrefix: "/de",
+    openGraphLocale: "de_DE",
     formattingLocale: "de-DE",
   },
   ru: {
@@ -69,6 +73,7 @@ export const localeDetails: Readonly<Record<Locale, LocaleDetail>> = {
     label: "Russian",
     nativeLabel: "Русский",
     pathPrefix: "/ru",
+    openGraphLocale: "ru_RU",
     formattingLocale: "ru-RU",
   },
 };
