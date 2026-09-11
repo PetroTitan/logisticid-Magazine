@@ -115,8 +115,14 @@ Rendered HTML from a production build:
 - **Russian link audit, on the running pair:** 16 Russian Magazine pages,
   RU→RU 330 links, RU→EN 15, RU→DE 14 — every one of the 29 cross-language
   destinations marked with `hrefLang` and `lang`, 0 unmarked, 0 broken.
-- Client JS **577,127 → 577,231 bytes**, +104. No locale corpus reaches the
-  browser.
+- Client JS **576,557 → 576,562 bytes, +5** — the sum of the `.js` chunks a
+  build emits, against a clean build of `origin/main` in a worktree. No locale
+  corpus reaches the browser.
+- **Two builds are identical** under the same environment: same route set,
+  byte-identical sitemap, identical client-JS total. Peak RSS 480 MB, 3.0 s
+  wall. The sitemap's only build-to-build difference is the canonical origin,
+  which comes from the environment — `validate-routing.mjs` supplies it and a
+  bare `next build` does not.
 
 ## Carried forward
 
