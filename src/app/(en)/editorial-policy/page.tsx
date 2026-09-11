@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PolicyPage } from "@/components/policy-page";
 import { publisher } from "@/config/publisher";
+import { staticAlternates } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -9,12 +10,13 @@ export const metadata = pageMetadata({
   title: "Editorial policy",
   description:
     "What LogisticID Magazine publishes, what it refuses to publish, and where its guidance stops and professional advice begins.",
+  languages: staticAlternates("editorial-policy"),
 });
 
 export default function EditorialPolicyPage() {
   return (
     <PolicyPage
-      path="/editorial-policy"
+      route="editorial-policy"
       standfirst="LogisticID Magazine explains how European road freight works. It is published by LogisticID, a freight forwarder, and this page sets out what that means for what you read here."
       title="Editorial policy"
     >

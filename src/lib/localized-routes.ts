@@ -122,3 +122,78 @@ export function populatedLocales(articles: readonly Article[]): readonly Locale[
     articles.some((article) => article.locale === locale),
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Static Magazine routes                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The Magazine's non-article routes, in each language.
+ *
+ * Keyed by a language-neutral identity, exactly as the main site's route
+ * manifest is, and for the same reason: the German path of the sourcing policy
+ * is not derivable from the English one, and deriving it by prefixing `/de`
+ * would publish `/magazine/de/sourcing-policy` — a German page at an English
+ * address, which is the thing the locale split exists to prevent.
+ *
+ * SECTION SLUGS ARE NOT IN HERE. A section is identified by its slug, that
+ * slug is already in the URL of published articles, and translating it would
+ * move pages rather than name them — `src/content/sections.ts` carries the
+ * German NAME instead. This table is for routes whose whole identity is the
+ * path.
+ */
+export const magazineStaticRoutes = {
+  "editorial-policy": { en: "/editorial-policy", de: "/de/redaktionsrichtlinien" },
+  "sourcing-policy": { en: "/sourcing-policy", de: "/de/quellenrichtlinien" },
+  "image-policy": { en: "/image-policy", de: "/de/bild-und-ki-richtlinien" },
+  corrections: { en: "/corrections", de: "/de/korrekturen" },
+  authors: { en: "/authors", de: "/de/autoren" },
+  search: { en: "/search", de: "/de/suche" },
+  rss: { en: "/rss.xml", de: "/de/rss.xml" },
+  atom: { en: "/atom.xml", de: "/de/atom.xml" },
+  "json-feed": { en: "/feed.json", de: "/de/feed.json" },
+  "search-index": { en: "/search-index.json", de: "/de/search-index.json" },
+  latest: { en: "/latest.json", de: "/de/latest.json" },
+} as const satisfies Readonly<Record<string, Readonly<Record<Locale, string>>>>;
+
+export type MagazineStaticRoute = keyof typeof magazineStaticRoutes;
+
+/** The Magazine-relative path of a static route in a language. */
+export function staticPath(route: MagazineStaticRoute, locale: Locale): string {
+  return magazineStaticRoutes[route][locale];
+}
+
+/** `alternates.languages` for a static route that exists in every language. */
+export function staticAlternates(route: MagazineStaticRoute): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    languages[localeDetails[locale].hreflang] = magazineUrl(staticPath(route, locale)).href;
+  }
+  languages["x-default"] = magazineUrl(staticPath(route, defaultLocale)).href;
+  return languages;
+}
+
+/** The Magazine-relative path of an author page in a language. */
+export function authorPath(slug: string, locale: Locale): string {
+  return `${staticPath("authors", locale)}/${slug}`;
+}
+
+/** `alternates.languages` for an author page. */
+export function authorAlternates(slug: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    languages[localeDetails[locale].hreflang] = magazineUrl(authorPath(slug, locale)).href;
+  }
+  languages["x-default"] = magazineUrl(authorPath(slug, defaultLocale)).href;
+  return languages;
+}
+
+/** `alternates.languages` for the index of one section, which exists in both. */
+export function sectionAlternates(section: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    languages[localeDetails[locale].hreflang] = magazineUrl(sectionPath(section, locale)).href;
+  }
+  languages["x-default"] = magazineUrl(sectionPath(section, defaultLocale)).href;
+  return languages;
+}

@@ -39,6 +39,28 @@ const MUST_SERVE = [
   ["/magazine/latest.json", "application/json"],
   ["/magazine/search-index.json", "application/json"],
   ["/magazine/sitemap.xml", "application/xml"],
+
+  /*
+   * The German edition. Every English surface above has its counterpart here,
+   * because a German route that exists only in the route table is a route
+   * nothing has ever asked the server for.
+   */
+  ["/magazine/de", "text/html"],
+  ["/magazine/de/road-freight", "text/html"],
+  ["/magazine/de/shipping-guides", "text/html"],
+  ["/magazine/de/logisticid", "text/html"],
+  ["/magazine/de/autoren", "text/html"],
+  ["/magazine/de/autoren/logisticid-editorial-team", "text/html"],
+  ["/magazine/de/suche", "text/html"],
+  ["/magazine/de/redaktionsrichtlinien", "text/html"],
+  ["/magazine/de/quellenrichtlinien", "text/html"],
+  ["/magazine/de/bild-und-ki-richtlinien", "text/html"],
+  ["/magazine/de/korrekturen", "text/html"],
+  ["/magazine/de/rss.xml", "application/rss+xml"],
+  ["/magazine/de/atom.xml", "application/atom+xml"],
+  ["/magazine/de/feed.json", "application/feed+json"],
+  ["/magazine/de/latest.json", "application/json"],
+  ["/magazine/de/search-index.json", "application/json"],
 ];
 
 /**
@@ -55,6 +77,32 @@ const MUST_404 = [
   "/",
   "/road-freight",
   "/_next/static/chunks/main.js",
+
+  /* A German URL that does not exist answers 404, not the German index. */
+  "/magazine/de/not-real",
+  "/magazine/de/road-freight/kein-solcher-beitrag",
+  "/magazine/de/autoren/niemand",
+
+  /*
+   * NO ENGLISH FALLBACK UNDER A GERMAN PATH. This is the whole reason the
+   * application is split into `(en)` and `(de)` route groups with
+   * `dynamicParams = false` on both: an English slug under `/de/` must be a
+   * real 404, because serving the English article there with a 200 would
+   * publish every article twice under two URLs in two languages and ask a
+   * search engine to pick.
+   */
+  "/magazine/de/road-freight/ftl-ltl-express-and-pallet-freight-explained",
+  "/magazine/de/logisticid/welcome-to-logisticid-magazine",
+  "/magazine/de/editorial-policy",
+  "/magazine/de/authors",
+
+  /* And no German slug under an English path, for the same reason. */
+  "/magazine/road-freight/ftl-ltl-express-palettenversand-unterschiede",
+  "/magazine/redaktionsrichtlinien",
+
+  /* `/de/magazine/*` is forbidden by the routing contract and owned by nobody. */
+  "/de/magazine",
+  "/de/magazine/road-freight",
 ];
 
 const failures = [];

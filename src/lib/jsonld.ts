@@ -1,10 +1,10 @@
-import { getAuthor } from "@/content/authors";
-import { getSection } from "@/content/sections";
+import { authorLabels, getAuthor } from "@/content/authors";
+import { getSection, sectionLabels } from "@/content/sections";
 import type { Article } from "@/content/types";
 import { publisher as publisherIdentity } from "@/config/publisher";
-import { localeDetails } from "@/config/locales";
-import { articlePath } from "@/lib/localized-routes";
-import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
+import { localeDetails, type Locale } from "@/config/locales";
+import { articlePath, authorPath } from "@/lib/localized-routes";
+import { magazineUrl, mainSiteUrl, sharedImageUrl, site } from "@/lib/site";
 
 /**
  * Structured data.
@@ -47,15 +47,19 @@ function publisher(): JsonObject {
  * named colleague. Emitting `Person` for a team byline would assert that a
  * person exists who does not.
  */
-function authorNode(slug: string): JsonObject {
+function authorNode(slug: string, locale: Locale): JsonObject {
   const author = getAuthor(slug);
   if (author === undefined) {
     throw new Error(`Cannot build JSON-LD for unknown author "${slug}"`);
   }
   return {
     "@type": author.isOrganization ? "Organization" : "Person",
-    name: author.name,
-    url: magazineUrl(`/authors/${author.slug}`).href,
+    // The byline as the article prints it, and the author page the article
+    // links to — both in the article's language. A German article whose
+    // `author.url` names the English author page describes a byline the page
+    // does not show, which is the `mainEntityOfPage` defect one field along.
+    name: authorLabels(author, locale).name,
+    url: magazineUrl(authorPath(author.slug, locale)).href,
   };
 }
 
@@ -81,7 +85,7 @@ export function articleJsonLd(article: Article): JsonObject {
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     url,
     datePublished: article.datePublished,
-    author: article.authors.map(authorNode),
+    author: article.authors.map((slug) => authorNode(slug, article.locale)),
     publisher: publisher(),
     // The article's own language, not the publication's default. A German
     // article declaring `en` tells a search engine the text is English, which
@@ -95,14 +99,21 @@ export function articleJsonLd(article: Article): JsonObject {
   if (article.heroImage !== undefined) {
     node["image"] = {
       "@type": "ImageObject",
-      url: magazineUrl(article.heroImage.src).href,
+      url: sharedImageUrl(article.heroImage.src).href,
       width: article.heroImage.width,
       height: article.heroImage.height,
     };
   }
 
   const section = getSection(article.section);
-  if (section !== undefined) node["articleSection"] = section.name;
+  if (section !== undefined) {
+    // The section name IN THE ARTICLE'S LANGUAGE. `articleSection` is a
+    // display string, and a German article declaring `articleSection:
+    // "Shipping guides"` describes itself to a machine in a language it is
+    // not written in — the same defect class as `inLanguage: "en"`, one
+    // field along.
+    node["articleSection"] = sectionLabels(section, article.locale).name;
+  }
 
   if (article.tags.length > 0) node["keywords"] = article.tags.join(", ");
 

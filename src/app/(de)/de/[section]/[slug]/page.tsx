@@ -4,6 +4,7 @@ import { ArticleView } from "@/components/article-view";
 import { allPublicArticles, findArticle, publicArticles } from "@/lib/corpus";
 import { articleAlternates, articlePath } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
+import { sharedImageUrl } from "@/lib/site";
 
 type Params = { params: Promise<{ section: string; slug: string }> };
 
@@ -44,6 +45,16 @@ export async function generateMetadata({ params }: Params) {
     ...(article.socialDescription === undefined
       ? {}
       : { socialDescription: article.socialDescription }),
+    ...(article.heroImage === undefined
+      ? {}
+      : {
+          image: {
+            url: sharedImageUrl(article.heroImage.src).href,
+            width: article.heroImage.width,
+            height: article.heroImage.height,
+            alt: article.heroImage.alt,
+          },
+        }),
     openGraph: {
       type: "article",
       publishedTime: article.datePublished,

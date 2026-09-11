@@ -1,6 +1,9 @@
+import { defaultLocale, localeDetails, type Locale } from "@/config/locales";
+import { strings } from "@/config/ui-strings";
+import { getSection, sectionLabels } from "@/content/sections";
 import type { Article } from "@/content/types";
-import { articlePath } from "@/lib/localized-routes";
-import { magazineUrl, site } from "@/lib/site";
+import { articlePath, indexPath, staticPath } from "@/lib/localized-routes";
+import { magazineUrl } from "@/lib/site";
 
 /**
  * Feed and sitemap construction.
@@ -16,6 +19,12 @@ import { magazineUrl, site } from "@/lib/site";
  * stale-while-revalidate window gives quick propagation and cheap polling.
  */
 export const FEED_CACHE_CONTROL = "public, max-age=600, s-maxage=600, stale-while-revalidate=3600";
+
+/** A section's display name in the article's own language. */
+function sectionName(article: Article): string {
+  const section = getSection(article.section);
+  return section === undefined ? article.section : sectionLabels(section, article.locale).name;
+}
 
 /** Escape text for inclusion in XML character data or an attribute value. */
 export function escapeXml(value: string): string {
@@ -49,9 +58,20 @@ export function articleUrl(article: Article): string {
   return magazineUrl(articlePath(article)).href;
 }
 
-export function rssFeed(articles: readonly Article[]): string {
-  const self = magazineUrl("/rss.xml").href;
-  const home = magazineUrl("/").href;
+/**
+ * One feed per language.
+ *
+ * NOT one feed with a `<language>` per item, and not one feed carrying both.
+ * A feed is a subscription: a reader who subscribes to the German feed has
+ * said which language they read, and delivering English articles into it is
+ * the mixed-language failure §32 of the phase brief names. The channel-level
+ * `language` element exists precisely because the channel, not the item, is
+ * what a subscriber chose.
+ */
+export function rssFeed(articles: readonly Article[], locale: Locale = defaultLocale): string {
+  const ui = strings(locale);
+  const self = magazineUrl(staticPath("rss", locale)).href;
+  const home = magazineUrl(indexPath(locale)).href;
 
   const items = articles
     .map((article) =>
@@ -62,7 +82,11 @@ export function rssFeed(articles: readonly Article[]): string {
         `      <guid isPermaLink="true">${escapeXml(articleUrl(article))}</guid>`,
         `      <description>${escapeXml(article.description)}</description>`,
         `      <pubDate>${rfc822(article.datePublished)}</pubDate>`,
-        `      <category>${escapeXml(article.section)}</category>`,
+        // The section NAME, in the feed's language — what a feed reader shows
+        // a person. The slug is the identity and stays out of the reader's
+        // view; `shipping-guides` inside a German document is a token, not a
+        // category.
+        `      <category>${escapeXml(sectionName(article))}</category>`,
         "    </item>",
       ].join("\n"),
     )
@@ -72,10 +96,10 @@ export function rssFeed(articles: readonly Article[]): string {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
     "  <channel>",
-    `    <title>${escapeXml(site.name)}</title>`,
+    `    <title>${escapeXml(ui.feedTitle)}</title>`,
     `    <link>${escapeXml(home)}</link>`,
-    `    <description>${escapeXml(site.tagline)}</description>`,
-    `    <language>${site.locale}</language>`,
+    `    <description>${escapeXml(ui.feedDescription)}</description>`,
+    `    <language>${localeDetails[locale].hreflang}</language>`,
     `    <atom:link href="${escapeXml(self)}" rel="self" type="application/rss+xml"/>`,
     items,
     "  </channel>",
@@ -84,9 +108,14 @@ export function rssFeed(articles: readonly Article[]): string {
   ].join("\n");
 }
 
-export function atomFeed(articles: readonly Article[], updated: string): string {
-  const self = magazineUrl("/atom.xml").href;
-  const home = magazineUrl("/").href;
+export function atomFeed(
+  articles: readonly Article[],
+  updated: string,
+  locale: Locale = defaultLocale,
+): string {
+  const ui = strings(locale);
+  const self = magazineUrl(staticPath("atom", locale)).href;
+  const home = magazineUrl(indexPath(locale)).href;
 
   const entries = articles
     .map((article) =>
@@ -105,9 +134,9 @@ export function atomFeed(articles: readonly Article[], updated: string): string 
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<feed xmlns="http://www.w3.org/2005/Atom">',
-    `  <title>${escapeXml(site.name)}</title>`,
-    `  <subtitle>${escapeXml(site.tagline)}</subtitle>`,
+    `<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="${localeDetails[locale].hreflang}">`,
+    `  <title>${escapeXml(ui.feedTitle)}</title>`,
+    `  <subtitle>${escapeXml(ui.feedDescription)}</subtitle>`,
     `  <link href="${escapeXml(self)}" rel="self"/>`,
     `  <link href="${escapeXml(home)}" rel="alternate"/>`,
     `  <id>${escapeXml(home)}</id>`,
@@ -119,14 +148,18 @@ export function atomFeed(articles: readonly Article[], updated: string): string 
 }
 
 /** JSON Feed 1.1 — https://www.jsonfeed.org/version/1.1/ */
-export function jsonFeed(articles: readonly Article[]): Record<string, unknown> {
+export function jsonFeed(
+  articles: readonly Article[],
+  locale: Locale = defaultLocale,
+): Record<string, unknown> {
+  const ui = strings(locale);
   return {
     version: "https://jsonfeed.org/version/1.1",
-    title: site.name,
-    description: site.tagline,
-    home_page_url: magazineUrl("/").href,
-    feed_url: magazineUrl("/feed.json").href,
-    language: site.locale,
+    title: ui.feedTitle,
+    description: ui.feedDescription,
+    home_page_url: magazineUrl(indexPath(locale)).href,
+    feed_url: magazineUrl(staticPath("json-feed", locale)).href,
+    language: localeDetails[locale].hreflang,
     items: articles.map((article) => ({
       id: articleUrl(article),
       url: articleUrl(article),
@@ -161,7 +194,15 @@ export function latestFeed(
       id: article.id,
       title: article.title,
       description: article.description,
-      href: `/magazine/${article.section}/${article.slug}`,
+      /*
+       * Through `articlePath`, so a German article is advertised at its German
+       * URL. Composed from section and slug — as this was — it handed the main
+       * site `/magazine/shipping-guides/welche-angaben-…`, an English path that
+       * 404s. The consumer is another application, which makes the defect
+       * invisible from here and 404 over there.
+       */
+      href: `/magazine${articlePath(article)}`,
+      locale: article.locale,
       section: article.section,
       publishedAt: article.datePublished,
       readingTime: article.readingTime,

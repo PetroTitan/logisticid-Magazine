@@ -1,5 +1,8 @@
+import type { Locale } from "@/config/locales";
 import { blocksToText } from "@/content/markdown";
-import { getAuthor } from "@/content/authors";
+import { getSection, sectionLabels } from "@/content/sections";
+import { articlePath } from "@/lib/localized-routes";
+import { authorLabels, getAuthor } from "@/content/authors";
 import type { Article } from "@/content/types";
 import { BASE_PATH } from "@/lib/site";
 
@@ -22,9 +25,14 @@ export type SearchDocument = {
   type: "magazine-article";
   title: string;
   description: string;
+  /** The language this document is written in. */
+  locale: Locale;
   /** Path on the LogisticID host, including the /magazine prefix. */
   href: string;
+  /** The section's slug — its identity, stable across languages. */
   section: string;
+  /** The section's name in this document's language, for display. */
+  sectionName: string;
   publishedAt: string;
   tags: string[];
   /** Lowercased searchable text: title, standfirst, summary, authors, body. */
@@ -46,8 +54,22 @@ export function buildSearchIndex(articles: readonly Article[], generatedAt: stri
       type: "magazine-article" as const,
       title: article.title,
       description: article.description,
-      href: `${BASE_PATH}/${article.section}/${article.slug}`,
+      locale: article.locale,
+      /*
+       * Through `articlePath`, so a German article's search result links to
+       * its German URL. Composed from section and slug alone — as this was —
+       * it named `/magazine/shipping-guides/welche-angaben-…`, an English path
+       * that 404s. Exactly the defect Phase 4S-A found in the article's
+       * JSON-LD, in a second place nobody had looked.
+       */
+      href: `${BASE_PATH}${articlePath(article)}`,
       section: article.section,
+      sectionName: (() => {
+        const section = getSection(article.section);
+        return section === undefined
+          ? article.section
+          : sectionLabels(section, article.locale).name;
+      })(),
       publishedAt: article.datePublished,
       tags: article.tags,
       text: [
@@ -57,7 +79,12 @@ export function buildSearchIndex(articles: readonly Article[], generatedAt: stri
         article.summary,
         article.section,
         article.tags.join(" "),
-        article.authors.map((slug) => getAuthor(slug)?.name ?? slug).join(" "),
+        article.authors
+          .map((slug) => {
+            const author = getAuthor(slug);
+            return author === undefined ? slug : authorLabels(author, article.locale).name;
+          })
+          .join(" "),
         blocksToText(article.body),
       ]
         .join(" ")

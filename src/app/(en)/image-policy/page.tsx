@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 import { PolicyPage } from "@/components/policy-page";
+import { staticAlternates, staticPath } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -6,12 +9,13 @@ export const metadata = pageMetadata({
   title: "Image and AI policy",
   description:
     "How LogisticID Magazine sources images, what provenance it records, and how AI is and is not used in producing articles.",
+  languages: staticAlternates("image-policy"),
 });
 
 export default function ImagePolicyPage() {
   return (
     <PolicyPage
-      path="/image-policy"
+      route="image-policy"
       standfirst="What appears alongside an article is a claim too. This page sets out where images come from and how AI is used."
       title="Image and AI policy"
     >
@@ -58,7 +62,8 @@ export default function ImagePolicyPage() {
         not it is right, and will invent a regulation number as readily as it will recall one. In
         freight, acting on such an answer has customs, contractual and safety consequences, so the
         sourcing requirements in the{" "}
-        <a href="./sourcing-policy">sourcing policy</a> apply to every factual claim regardless of
+        <Link href={staticPath("sourcing-policy", "en")}>sourcing policy</Link> apply to every
+        factual claim regardless of
         how a draft was produced.
       </p>
     </PolicyPage>

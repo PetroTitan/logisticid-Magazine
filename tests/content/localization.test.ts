@@ -28,7 +28,12 @@ import {
   sectionPath,
 } from "@/lib/localized-routes";
 import { rssFeed, sitemapXml, articleUrl } from "@/lib/feeds";
-import { FOREIGN_LANGUAGE_MARKER, mainSiteTarget } from "@/lib/main-site-links";
+import {
+  englishOnlyMainSitePaths,
+  FOREIGN_LANGUAGE_MARKER,
+  mainSiteTarget,
+  mirroredMainSitePaths,
+} from "@/lib/main-site-links";
 
 /**
  * Guards on the Magazine's localization.
@@ -270,12 +275,52 @@ describe("hreflang", () => {
   });
 
   it("gives an untranslated article no alternates at all", () => {
+    /**
+     * THIS TEST OUTLIVED ITS FIXTURE, WHICH IS THE POINT OF WRITING IT DOWN.
+     *
+     * It used to find the untranslated articles in the real corpus and assert
+     * that none of them advertised a German version. Phase 4T translated the
+     * last one, so the search returned nothing and the guard — correctly —
+     * refused to pass over an empty list.
+     *
+     * The rule it protects has not stopped mattering; it has stopped being
+     * reachable from the corpus. The next English article published without a
+     * translation is exactly when a fake `hreflang="de"` would ship. So the
+     * invariant is now tested against a corpus built for it, and the real
+     * corpus is checked separately below — vacuously true today, and the
+     * thing that fails on the day it is not.
+     */
+    const englishOnly = {
+      id: "an-english-only-article",
+      locale: "en" as const,
+      section: "road-freight",
+      slug: "an-english-only-article",
+    };
+    const paired = {
+      id: "a-paired-article",
+      locale: "en" as const,
+      section: "road-freight",
+      slug: "a-paired-article",
+    };
+    const translation = {
+      id: "ein-uebersetzter-beitrag",
+      locale: "de" as const,
+      section: "road-freight",
+      slug: "ein-uebersetzter-beitrag",
+      translationOf: "a-paired-article",
+    };
+    const synthetic = [englishOnly, paired, translation] as unknown as Article[];
+
+    expect(articleAlternates(synthetic[0] as Article, synthetic)).toBeUndefined();
+    expect(articleAlternates(synthetic[1] as Article, synthetic)).toBeDefined();
+  });
+
+  it("advertises no translation for any real article that has none", () => {
     const lonely = corpus.filter(
       (article) =>
         article.translationOf === undefined &&
         !corpus.some((other) => other.translationOf === article.id),
     );
-    expect(lonely.length, "every article is translated — nothing to test").toBeGreaterThan(0);
     for (const article of lonely) {
       expect(articleAlternates(article, corpus), article.id).toBeUndefined();
     }
@@ -344,7 +389,7 @@ describe("feeds stay in one language", () => {
 
 describe("links into the main site", () => {
   it("sends a German reader to a German page where one exists", () => {
-    for (const path of ["/", "/request-a-quote", "/road-freight", "/contact"]) {
+    for (const path of ["/", "/request-a-quote", "/road-freight", "/contact", "/shippers"]) {
       const target = mainSiteTarget(path, "de");
       expect(target.path, path).toMatch(/^\/de/);
       expect(target.foreignLanguage, path).toBe(false);
@@ -357,11 +402,39 @@ describe("links into the main site", () => {
      * "LogisticID für Versender" — a German label — pointing at the English
      * `/shippers` page with nothing saying so. A German label on an English
      * destination promises a German page and delivers an English one.
+     *
+     * THE PATHS ARE DERIVED, NOT NAMED. This test asserted `/shippers`, which
+     * was English-only when it was written and is `/de/versender` now — so it
+     * failed on a correct change, which is the failure mode of a hand-written
+     * expectation about somebody else's site. It now asks the mirror which
+     * pages are deliberately English, and there is always at least one: the
+     * three legal documents the main site holds back for review.
      */
-    const target = mainSiteTarget("/shippers", "de");
-    expect(target.path).toBe("/shippers");
-    expect(target.foreignLanguage).toBe(true);
+    const englishOnly = englishOnlyMainSitePaths();
+    expect(englishOnly.length).toBeGreaterThan(0);
+    for (const path of englishOnly) {
+      const target = mainSiteTarget(path, "de");
+      expect(target.path, path).toBe(path);
+      expect(target.foreignLanguage, path).toBe(true);
+    }
     expect(FOREIGN_LANGUAGE_MARKER.de).not.toBe("");
+  });
+
+  it("sends a German reader to a German page for every main-site path an article can name", () => {
+    /**
+     * After the main site's Phase 4S-B5 the German corpus is complete, so
+     * §27 of this phase expects German Magazine → English main to be zero
+     * except for the documented exceptions. Anything in the mirror that is
+     * neither translated nor deliberately English-only would be a forgotten
+     * entry rather than a decision.
+     */
+    const exceptions = new Set(englishOnlyMainSitePaths());
+    for (const path of mirroredMainSitePaths()) {
+      if (exceptions.has(path)) continue;
+      const target = mainSiteTarget(path, "de");
+      expect(target.foreignLanguage, path).toBe(false);
+      expect(target.path, path).toMatch(/^\/de(\/|$)/);
+    }
   });
 
   it("marks nothing for a reader already in the default language", () => {

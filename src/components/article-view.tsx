@@ -9,14 +9,20 @@ import { Prose } from "@/components/prose";
 import { References } from "@/components/references";
 import { localeDetails, type Locale } from "@/config/locales";
 import { strings } from "@/config/ui-strings";
-import { getAuthor } from "@/content/authors";
-import { getSection } from "@/content/sections";
+import { authorLabels, getAuthor } from "@/content/authors";
+import { getSection, sectionLabels } from "@/content/sections";
 import type { Article, RelatedLogisticIDEntity } from "@/content/types";
 import { allPublicArticles, articleById } from "@/lib/corpus";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
-import { articleCluster, articlePath, indexPath, sectionPath } from "@/lib/localized-routes";
+import {
+  articleCluster,
+  articlePath,
+  authorPath,
+  indexPath,
+  sectionPath,
+} from "@/lib/localized-routes";
 import { FOREIGN_LANGUAGE_MARKER, mainSiteTarget } from "@/lib/main-site-links";
-import { magazineUrl, mainSiteUrl, site } from "@/lib/site";
+import { magazineUrl, mainSiteUrl } from "@/lib/site";
 
 /**
  * One article, rendered in the language it was written in.
@@ -113,6 +119,8 @@ function relatedTarget(
           "/": "LogisticID",
           "/request-a-quote": "Frachtanfrage stellen",
           "/road-freight": "Europäischer Straßengüterverkehr",
+          "/freight-forwarding": "Spedition",
+          "/services": "Frachtleistungen",
         },
       };
       const label = names[locale][entity.path] ?? names.en[entity.path];
@@ -162,8 +170,8 @@ function Byline({ article, locale }: { article: Article; locale: Locale }) {
           return (
             <Fragment key={slug}>
               {index > 0 ? ", " : ""}
-              <Link href={`/authors/${slug}`} hrefLang="en">
-                {author?.name ?? slug}
+              <Link href={authorPath(slug, locale)}>
+                {author === undefined ? slug : authorLabels(author, locale).name}
               </Link>
             </Fragment>
           );
@@ -227,12 +235,20 @@ export function ArticleView({ article, locale }: { article: Article; locale: Loc
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "LogisticID", url: mainSiteUrl(mainSiteTarget("/", locale).path).href },
-          { name: site.name, url: magazineUrl(indexPath(locale)).href },
+          /*
+           * The SAME string the visible breadcrumb shows. Structured data that
+           * names a step differently from the trail on the page describes a
+           * hierarchy the reader cannot see, and the guidance for
+           * `BreadcrumbList` is explicit that the name should be the visible
+           * one. It was `site.name` — "LogisticID Magazine" — under a visible
+           * crumb reading "Magazine", and under a German one reading "Magazin".
+           */
+          { name: ui.magazineCrumb, url: magazineUrl(indexPath(locale)).href },
           ...(section === undefined
             ? []
             : [
                 {
-                  name: section.name,
+                  name: sectionLabels(section, locale).name,
                   url: magazineUrl(sectionPath(section.slug, locale)).href,
                 },
               ]),
@@ -251,13 +267,15 @@ export function ArticleView({ article, locale }: { article: Article; locale: Loc
             { label: ui.magazineCrumb, href: indexPath(locale) },
             ...(section === undefined
               ? []
-              : [{ label: section.name, href: sectionPath(section.slug, locale) }]),
+              : [{ label: sectionLabels(section, locale).name, href: sectionPath(section.slug, locale) }]),
             { label: article.title },
           ]}
         />
 
         <header className="article__header">
-          <p className="page__eyebrow">{section?.name ?? article.section}</p>
+          <p className="page__eyebrow">
+            {section === undefined ? article.section : sectionLabels(section, locale).name}
+          </p>
           <h1 className="article__title">{article.title}</h1>
           <p className="article__standfirst">{article.subtitle}</p>
           <Byline article={article} locale={locale} />
@@ -293,9 +311,9 @@ export function ArticleView({ article, locale }: { article: Article; locale: Loc
           </figure>
         )}
 
-        <Prose blocks={article.body} sources={article.sources} />
+        <Prose blocks={article.body} locale={locale} sources={article.sources} />
 
-        <References sources={article.sources} />
+        <References locale={locale} sources={article.sources} />
 
         {article.updateHistory.length === 0 ? null : (
           <section aria-labelledby="updates-heading" className="article__aside">

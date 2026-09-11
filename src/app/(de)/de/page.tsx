@@ -2,7 +2,7 @@ import { ArticleCard } from "@/components/article-card";
 import { JsonLd } from "@/components/json-ld";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { strings } from "@/config/ui-strings";
-import { sections } from "@/content/sections";
+import { sectionLabels, sections } from "@/content/sections";
 import { articlesInSection, publicArticles } from "@/lib/corpus";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { indexPath, sectionPath } from "@/lib/localized-routes";
@@ -60,7 +60,7 @@ export default function GermanHomePage() {
 
       <div className="shell page">
         <p className="page__eyebrow">LogisticID Magazine</p>
-        <h1 className="page__title">Europäischer Straßengüterverkehr, erklärt</h1>
+        <h1 className="page__title">{ui.homeTitle}</h1>
         <p className="page__standfirst">{ui.standfirst}</p>
 
         <LanguageSwitcher
@@ -89,9 +89,9 @@ export default function GermanHomePage() {
               {populated.map((section) => (
                 <li className="section-card" key={section.slug}>
                   <h3>
-                    <Link href={sectionPath(section.slug, "de")}>{section.name}</Link>
+                    <Link href={sectionPath(section.slug, "de")}>{sectionLabels(section, "de").name}</Link>
                   </h3>
-                  <p>{section.description}</p>
+                  <p>{sectionLabels(section, "de").description}</p>
                 </li>
               ))}
             </ul>

@@ -1,4 +1,5 @@
 import { PolicyPage } from "@/components/policy-page";
+import { staticAlternates } from "@/lib/localized-routes";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -6,12 +7,13 @@ export const metadata = pageMetadata({
   title: "Sourcing policy",
   description:
     "The source hierarchy LogisticID Magazine works from, how citations are recorded, and what it will not treat as evidence.",
+  languages: staticAlternates("sourcing-policy"),
 });
 
 export default function SourcingPolicyPage() {
   return (
     <PolicyPage
-      path="/sourcing-policy"
+      route="sourcing-policy"
       standfirst="Every material factual claim in LogisticID Magazine is tied to a source a reader can open and check. This page describes which sources count and how they are recorded."
       title="Sourcing policy"
     >
